@@ -20,6 +20,7 @@ import (
 	"fmt"
 
 	"k8s.io/kops/pkg/model"
+	"k8s.io/kops/pkg/sshcredentials"
 	"k8s.io/kops/upup/pkg/fi"
 	"k8s.io/kops/upup/pkg/fi/cloudup/awstasks"
 	"k8s.io/kops/upup/pkg/fi/fitasks"
@@ -29,6 +30,7 @@ import (
 type OIDCProviderBuilder struct {
 	*model.KopsModelContext
 
+	KeyStore  fi.CAStore
 	Lifecycle *fi.Lifecycle
 }
 
@@ -54,6 +56,8 @@ const discoveryJSON = `
 		]
 }`
 
+const keypairName = "service-account-signer"
+
 func (b *OIDCProviderBuilder) Build(c *fi.ModelBuilderContext) error {
 	if b.Cluster.Spec.ServiceOIDCProvider == nil || b.Cluster.Spec.ServiceOIDCProvider.IssuerHostPath == nil {
 		return nil
@@ -62,9 +66,9 @@ func (b *OIDCProviderBuilder) Build(c *fi.ModelBuilderContext) error {
 
 	format := string(fi.KeysetFormatV1Alpha2)
 	saSigner := &fitasks.Keypair{
-		Name:      fi.String("service-account-signer"),
+		Name:      fi.String(keypairName),
 		Lifecycle: b.Lifecycle,
-		Subject:   "cn=service-account-signer",
+		Subject:   fmt.Sprintf("cn=%v", keypairName),
 		Type:      "ca",
 		Format:    format,
 	}
@@ -79,12 +83,27 @@ func (b *OIDCProviderBuilder) Build(c *fi.ModelBuilderContext) error {
 	}
 	c.AddTask(discoveryFile)
 
+	cert, _, _, err := b.KeyStore.FindKeypair(keypairName)
+	if err != nil {
+		return err
+	}
+	if cert == nil {
+		return fmt.Errorf("keypair has not been created yet: %v", keypairName)
+	}
+	pubKey, err := cert.AsString()
+	if err != nil {
+		return err
+	}
+	fingerprint, err := sshcredentials.Fingerprint(pubKey)
+	if err != nil {
+		return err
+	}
 	oidcProvider := &awstasks.IAMOIDCProvider{
 		Name:        fi.String(b.ClusterName()),
 		Lifecycle:   b.Lifecycle,
 		URL:         fi.String(issuerURL),
 		ClientIDs:   []*string{fi.String("sts.amazonaws.com")},
-		Thumbprints: []*string{}, // TODO: use pkg/sshcredentials/fingerprint.go to get fingerprint from signing public key
+		Thumbprints: []*string{fi.String(fingerprint)},
 	}
 	c.AddTask(oidcProvider)
 
