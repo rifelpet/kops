@@ -23,6 +23,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/iam"
 	"k8s.io/klog"
+	"k8s.io/kops/pkg/sshcredentials"
 	"k8s.io/kops/upup/pkg/fi"
 	"k8s.io/kops/upup/pkg/fi/cloudup/awsup"
 	"k8s.io/kops/upup/pkg/fi/cloudup/cloudformation"
@@ -37,6 +38,10 @@ type IAMOIDCProvider struct {
 	ClientIDs   []*string
 	Thumbprints []*string
 	URL         *string
+
+	// Used to fetch Thumbprint values
+	CAStore     *fi.CAStore
+	SecretNames []string
 
 	Name *string
 }
@@ -90,8 +95,11 @@ func (s *IAMOIDCProvider) CheckChanges(a, e, changes *IAMOIDCProvider) error {
 		if e.ClientIDs == nil {
 			return fi.RequiredField("ClientIDs")
 		}
-		if e.Thumbprints == nil {
-			return fi.RequiredField("Thumbprints")
+		if e.CAStore == nil {
+			return fi.RequiredField("CAStore")
+		}
+		if e.SecretNames == nil {
+			return fi.RequiredField("SecretNames")
 		}
 	} else {
 		if changes.ClientIDs == nil {
@@ -104,13 +112,17 @@ func (s *IAMOIDCProvider) CheckChanges(a, e, changes *IAMOIDCProvider) error {
 	return nil
 }
 
-func (_ *IAMOIDCProvider) RenderAWS(t *awsup.AWSAPITarget, a, e, changes *IAMOIDCProvider) error {
+func (p *IAMOIDCProvider) RenderAWS(t *awsup.AWSAPITarget, a, e, changes *IAMOIDCProvider) error {
 	if a == nil {
-		klog.V(2).Infof("Creating IAMOIDCProvider with Name:%q", *e.Name)
 
+		klog.V(2).Infof("Creating IAMOIDCProvider with Name:%q", *e.Name)
+		thumbprints, err := p.thumbprints()
+		if err != nil {
+			return err
+		}
 		request := &iam.CreateOpenIDConnectProviderInput{
 			ClientIDList:   e.ClientIDs,
-			ThumbprintList: e.Thumbprints,
+			ThumbprintList: thumbprints,
 			Url:            e.URL,
 		}
 
@@ -121,20 +133,50 @@ func (_ *IAMOIDCProvider) RenderAWS(t *awsup.AWSAPITarget, a, e, changes *IAMOID
 
 		e.ARN = response.OpenIDConnectProviderArn
 	} else {
-		if changes.Thumbprints != nil {
+		if changes.SecretNames != nil {
 			klog.V(2).Infof("Updating IAMOIDCProvider Thumbprints %q", *e.ARN)
+
+			thumbprints, err := p.thumbprints()
+			if err != nil {
+				return err
+			}
 
 			request := &iam.UpdateOpenIDConnectProviderThumbprintInput{}
 			request.OpenIDConnectProviderArn = e.ARN
-			request.ThumbprintList = e.Thumbprints
+			request.ThumbprintList = thumbprints
 
-			_, err := t.Cloud.IAM().UpdateOpenIDConnectProviderThumbprint(request)
+			_, err = t.Cloud.IAM().UpdateOpenIDConnectProviderThumbprint(request)
 			if err != nil {
 				return fmt.Errorf("error updating IAMOIDCProvider Thumbprints: %v", err)
 			}
 		}
 	}
 	return nil
+}
+
+func (p *IAMOIDCProvider) thumbprints() ([]*string, error) {
+	ca := *p.CAStore
+	thumbprints := make([]*string, 0)
+
+	for _, secret := range p.SecretNames {
+		cert, _, _, err := ca.FindKeypair(secret)
+		if err != nil {
+			return nil, err
+		}
+		if cert == nil {
+			return nil, fmt.Errorf("keypair has not been created yet: %v", secret)
+		}
+		pubKey, err := cert.AsString()
+		if err != nil {
+			return nil, err
+		}
+		fingerprint, err := sshcredentials.Fingerprint(pubKey)
+		if err != nil {
+			return nil, err
+		}
+		thumbprints = append(thumbprints, s(fingerprint))
+	}
+	return thumbprints, nil
 }
 
 type terraformIAMOIDCProvider struct {
