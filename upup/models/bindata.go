@@ -56,6 +56,7 @@
 // upup/models/cloudup/resources/addons/openstack.addons.k8s.io/BUILD.bazel
 // upup/models/cloudup/resources/addons/openstack.addons.k8s.io/k8s-1.11.yaml.template
 // upup/models/cloudup/resources/addons/openstack.addons.k8s.io/k8s-1.13.yaml.template
+// upup/models/cloudup/resources/addons/pod-identity-webhook.aws/k8s-1.16.yaml.template
 // upup/models/cloudup/resources/addons/podsecuritypolicy.addons.k8s.io/k8s-1.10.yaml.template
 // upup/models/cloudup/resources/addons/podsecuritypolicy.addons.k8s.io/k8s-1.12.yaml.template
 // upup/models/cloudup/resources/addons/podsecuritypolicy.addons.k8s.io/k8s-1.9.yaml.template
@@ -15855,6 +15856,182 @@ func cloudupResourcesAddonsOpenstackAddonsK8sIoK8s113YamlTemplate() (*asset, err
 	return a, nil
 }
 
+var _cloudupResourcesAddonsPodIdentityWebhookAwsK8s116YamlTemplate = []byte(`# https://github.com/aws/amazon-eks-pod-identity-webhook/tree/master/deploy
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pod-identity-webhook
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: pod-identity-webhook
+  namespace: kube-system
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - create
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - update
+  - patch
+  resourceNames:
+  - "pod-identity-webhook"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: pod-identity-webhook
+  namespace: kube-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: pod-identity-webhook
+subjects:
+- kind: ServiceAccount
+  name: pod-identity-webhook
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: pod-identity-webhook
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - serviceaccounts
+  verbs:
+  - get
+  - watch
+  - list
+- apiGroups:
+  - certificates.k8s.io
+  resources:
+  - certificatesigningrequests
+  verbs:
+  - create
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: pod-identity-webhook
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: pod-identity-webhook
+subjects:
+- kind: ServiceAccount
+  name: pod-identity-webhook
+  namespace: kube-system
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pod-identity-webhook
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: pod-identity-webhook
+  template:
+    metadata:
+      labels:
+        k8s-app: pod-identity-webhook
+    spec:
+      serviceAccountName: pod-identity-webhook
+      containers:
+      - name: pod-identity-webhook
+        image: 602401143452.dkr.ecr.us-west-2.amazonaws.com/eks/pod-identity-webhook:latest # TODO: find better tag: v0.2.0 ?
+        imagePullPolicy: Always
+        command:
+        - /webhook
+        # --in-cluster decides whether to create a CSR or be provided a cert and key
+        # The CSR can't be approved easily through bootstrap channel builder so use cert & key
+        - --in-cluster=false
+        - --namespace=kube-system
+        - --service-name=pod-identity-webhook
+        - --tls-secret=pod-identity-webhook
+        - --annotation-prefix=eks.amazonaws.com
+        - --token-audience=sts.amazonaws.com
+        - --logtostderr
+        volumeMounts:
+        - name: webhook-certs
+          mountPath: /var/run/app/certs
+          readOnly: false
+        - name: webhook-cert
+          mountPath: /etc/webhook/certs
+          readOnly: true
+      volumes:
+      - name: webhook-certs
+        emptyDir: {}
+      - name: webhook-cert
+        # TODO: this path can vary, see NodeupModelContext.PathSrvKubernetes()
+        hostPath: /srv/kubernetes/pod-identity-webhook
+---
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: pod-identity-webhook
+  namespace: kube-system
+webhooks:
+- name: pod-identity-webhook.amazonaws.com
+  failurePolicy: Ignore
+  clientConfig:
+    service:
+      name: pod-identity-webhook
+      namespace: kube-system
+      path: "/mutate"
+    caBundle: TODO get from pod-identiy-webhook-ca keypair
+  rules:
+  - operations: [ "CREATE" ]
+    apiGroups: [""]
+    apiVersions: ["v1"]
+    resources: ["pods"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pod-identity-webhook
+  namespace: kube-system
+  annotations:
+    prometheus.io/port: "443"
+    prometheus.io/scheme: "https"
+    prometheus.io/scrape: "true"
+spec:
+  ports:
+  - port: 443
+    targetPort: 443
+  selector:
+    k8s-app: pod-identity-webhook`)
+
+func cloudupResourcesAddonsPodIdentityWebhookAwsK8s116YamlTemplateBytes() ([]byte, error) {
+	return _cloudupResourcesAddonsPodIdentityWebhookAwsK8s116YamlTemplate, nil
+}
+
+func cloudupResourcesAddonsPodIdentityWebhookAwsK8s116YamlTemplate() (*asset, error) {
+	bytes, err := cloudupResourcesAddonsPodIdentityWebhookAwsK8s116YamlTemplateBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "cloudup/resources/addons/pod-identity-webhook.aws/k8s-1.16.yaml.template", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 var _cloudupResourcesAddonsPodsecuritypolicyAddonsK8sIoK8s110YamlTemplate = []byte(`---
 apiVersion: extensions/v1beta1
 kind: PodSecurityPolicy
@@ -17012,6 +17189,7 @@ var _bindata = map[string]func() (*asset, error){
 	"cloudup/resources/addons/openstack.addons.k8s.io/BUILD.bazel":                                        cloudupResourcesAddonsOpenstackAddonsK8sIoBuildBazel,
 	"cloudup/resources/addons/openstack.addons.k8s.io/k8s-1.11.yaml.template":                             cloudupResourcesAddonsOpenstackAddonsK8sIoK8s111YamlTemplate,
 	"cloudup/resources/addons/openstack.addons.k8s.io/k8s-1.13.yaml.template":                             cloudupResourcesAddonsOpenstackAddonsK8sIoK8s113YamlTemplate,
+	"cloudup/resources/addons/pod-identity-webhook.aws/k8s-1.16.yaml.template":                            cloudupResourcesAddonsPodIdentityWebhookAwsK8s116YamlTemplate,
 	"cloudup/resources/addons/podsecuritypolicy.addons.k8s.io/k8s-1.10.yaml.template":                     cloudupResourcesAddonsPodsecuritypolicyAddonsK8sIoK8s110YamlTemplate,
 	"cloudup/resources/addons/podsecuritypolicy.addons.k8s.io/k8s-1.12.yaml.template":                     cloudupResourcesAddonsPodsecuritypolicyAddonsK8sIoK8s112YamlTemplate,
 	"cloudup/resources/addons/podsecuritypolicy.addons.k8s.io/k8s-1.9.yaml.template":                      cloudupResourcesAddonsPodsecuritypolicyAddonsK8sIoK8s19YamlTemplate,
@@ -17174,6 +17352,9 @@ var _bintree = &bintree{nil, map[string]*bintree{
 					"BUILD.bazel":            {cloudupResourcesAddonsOpenstackAddonsK8sIoBuildBazel, map[string]*bintree{}},
 					"k8s-1.11.yaml.template": {cloudupResourcesAddonsOpenstackAddonsK8sIoK8s111YamlTemplate, map[string]*bintree{}},
 					"k8s-1.13.yaml.template": {cloudupResourcesAddonsOpenstackAddonsK8sIoK8s113YamlTemplate, map[string]*bintree{}},
+				}},
+				"pod-identity-webhook.aws": {nil, map[string]*bintree{
+					"k8s-1.16.yaml.template": {cloudupResourcesAddonsPodIdentityWebhookAwsK8s116YamlTemplate, map[string]*bintree{}},
 				}},
 				"podsecuritypolicy.addons.k8s.io": {nil, map[string]*bintree{
 					"k8s-1.10.yaml.template": {cloudupResourcesAddonsPodsecuritypolicyAddonsK8sIoK8s110YamlTemplate, map[string]*bintree{}},

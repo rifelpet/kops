@@ -101,7 +101,7 @@ spec:
         command:
         - /webhook
         # --in-cluster decides whether to create a CSR or be provided a cert and key
-        # The CSR can't be approved easily through bootstrap channel builder so use cert & key 
+        # The CSR can't be approved easily through bootstrap channel builder so use cert & key
         - --in-cluster=false
         - --namespace=kube-system
         - --service-name=pod-identity-webhook
