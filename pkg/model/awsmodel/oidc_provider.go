@@ -61,10 +61,10 @@ const (
 )
 
 func (b *OIDCProviderBuilder) Build(c *fi.ModelBuilderContext) error {
-	if b.Cluster.Spec.ServiceOIDCProvider == nil || b.Cluster.Spec.ServiceOIDCProvider.IssuerHostPath == nil {
+	if b.Cluster.Spec.ServiceOIDCProvider == nil || b.Cluster.Spec.ServiceOIDCProvider.Issuer == nil {
 		return nil
 	}
-	issuerURL := fmt.Sprintf("https://%v", *b.Cluster.Spec.ServiceOIDCProvider.IssuerHostPath)
+	issuerURL := *b.Cluster.Spec.ServiceOIDCProvider.Issuer
 
 	format := string(fi.KeysetFormatV1Alpha2)
 	saSigner := &fitasks.Keypair{

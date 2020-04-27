@@ -5301,7 +5301,7 @@ func Convert_kops_SSHCredentialSpec_To_v1alpha2_SSHCredentialSpec(in *kops.SSHCr
 }
 
 func autoConvert_v1alpha2_ServiceOIDCProviderSpec_To_kops_ServiceOIDCProviderSpec(in *ServiceOIDCProviderSpec, out *kops.ServiceOIDCProviderSpec, s conversion.Scope) error {
-	out.IssuerHostPath = in.IssuerHostPath
+	out.Issuer = in.Issuer
 	return nil
 }
 
@@ -5311,7 +5311,7 @@ func Convert_v1alpha2_ServiceOIDCProviderSpec_To_kops_ServiceOIDCProviderSpec(in
 }
 
 func autoConvert_kops_ServiceOIDCProviderSpec_To_v1alpha2_ServiceOIDCProviderSpec(in *kops.ServiceOIDCProviderSpec, out *ServiceOIDCProviderSpec, s conversion.Scope) error {
-	out.IssuerHostPath = in.IssuerHostPath
+	out.Issuer = in.Issuer
 	return nil
 }
 

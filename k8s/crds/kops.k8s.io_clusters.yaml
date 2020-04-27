@@ -3388,9 +3388,8 @@ spec:
                 description: ServiceOIDCProvider defines the OIDC provider setup for
                   the cluster (AWS only)
                 properties:
-                  issuerHostPath:
-                    description: IssuerHostPath is the domain name + path to the discovery
-                      and key documents.
+                  issuer:
+                    description: Issuer is the URL to the discovery and key documents.
                     type: string
                 type: object
               sshAccess:

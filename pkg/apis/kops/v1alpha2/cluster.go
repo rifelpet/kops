@@ -542,8 +542,8 @@ type HTTPProxy struct {
 
 // ServiceOIDCProviderSpec defines the OIDC provider setup for the cluster (AWS only)
 type ServiceOIDCProviderSpec struct {
-	// IssuerHostPath is the domain name + path to the discovery and key documents.
-	IssuerHostPath *string `json:"issuerHostPath,omitempty"`
+	// Issuer is the URL to the discovery and key documents.
+	Issuer *string `json:"issuer,omitempty"`
 }
 
 // TargetSpec allows for specifying target config in an extensible way
