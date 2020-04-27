@@ -109,6 +109,8 @@ func getDependencies(tasks map[string]Task, v reflect.Value) []Task {
 				// Ignore: not a dependency (?)
 			} else if _, ok := intf.(*pkix.Name); ok {
 				// Ignore: not a dependency
+			} else if _, ok := intf.(*VFSCAStore); ok {
+				// Ignore: not a dependency
 			} else {
 				return fmt.Errorf("Unhandled type for %q: %T", path, v.Interface())
 			}
@@ -121,7 +123,7 @@ func getDependencies(tasks map[string]Task, v reflect.Value) []Task {
 	})
 
 	if err != nil {
-		klog.Fatalf("unexpected error finding dependencies %v", err)
+		klog.Fatalf("unexpected error finding dependencies: %v", err)
 	}
 
 	return dependencies

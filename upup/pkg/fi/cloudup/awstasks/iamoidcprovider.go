@@ -188,13 +188,17 @@ type terraformIAMOIDCProvider struct {
 	AssumeRolePolicy *terraform.Literal `json:"assume_role_policy" cty:"assume_role_policy"`
 }
 
-func (_ *IAMOIDCProvider) RenderTerraform(t *terraform.TerraformTarget, a, e, changes *IAMOIDCProvider) error {
+func (p *IAMOIDCProvider) RenderTerraform(t *terraform.TerraformTarget, a, e, changes *IAMOIDCProvider) error {
 
+	thumbprints, err := p.thumbprints()
+	if err != nil {
+		return err
+	}
 	tf := &terraformIAMOIDCProvider{
 		Name:           e.Name,
 		URL:            e.URL,
 		ClientIDList:   e.ClientIDs,
-		ThumbprintList: e.Thumbprints,
+		ThumbprintList: thumbprints,
 	}
 
 	return t.RenderResource("aws_iam_openid_connect_provider", *e.Name, tf)
