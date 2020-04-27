@@ -255,7 +255,7 @@ func ValidateCluster(c *kops.Cluster, strict bool) field.ErrorList {
 			if kops.CloudProviderID(c.Spec.CloudProvider) != kops.CloudProviderAWS {
 				allErrs = append(allErrs, field.Forbidden(fieldSpec.Child("serviceOIDCProvider"), "serviceOIDCProvider is supported only in AWS"))
 			}
-			// TODO: validate issuerHostPath is only a domain name + path (no protocol)
+			// TODO: validate issuer is only a valid url
 		}
 	}
 
