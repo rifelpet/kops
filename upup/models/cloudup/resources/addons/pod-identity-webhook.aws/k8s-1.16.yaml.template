@@ -1,0 +1,160 @@
+# https://github.com/aws/amazon-eks-pod-identity-webhook/tree/master/deploy
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pod-identity-webhook
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: pod-identity-webhook
+  namespace: kube-system
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - create
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - update
+  - patch
+  resourceNames:
+  - "pod-identity-webhook"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: pod-identity-webhook
+  namespace: kube-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: pod-identity-webhook
+subjects:
+- kind: ServiceAccount
+  name: pod-identity-webhook
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: pod-identity-webhook
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - serviceaccounts
+  verbs:
+  - get
+  - watch
+  - list
+- apiGroups:
+  - certificates.k8s.io
+  resources:
+  - certificatesigningrequests
+  verbs:
+  - create
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: pod-identity-webhook
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: pod-identity-webhook
+subjects:
+- kind: ServiceAccount
+  name: pod-identity-webhook
+  namespace: kube-system
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pod-identity-webhook
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: pod-identity-webhook
+  template:
+    metadata:
+      labels:
+        k8s-app: pod-identity-webhook
+    spec:
+      serviceAccountName: pod-identity-webhook
+      containers:
+      - name: pod-identity-webhook
+        image: 602401143452.dkr.ecr.us-west-2.amazonaws.com/eks/pod-identity-webhook:latest # TODO: find better tag: v0.2.0 ?
+        imagePullPolicy: Always
+        command:
+        - /webhook
+        # --in-cluster decides whether to create a CSR or be provided a cert and key
+        # The CSR can't be approved easily through bootstrap channel builder so use cert & key 
+        - --in-cluster=false
+        - --namespace=kube-system
+        - --service-name=pod-identity-webhook
+        - --tls-secret=pod-identity-webhook
+        - --annotation-prefix=eks.amazonaws.com
+        - --token-audience=sts.amazonaws.com
+        - --logtostderr
+        volumeMounts:
+        - name: webhook-certs
+          mountPath: /var/run/app/certs
+          readOnly: false
+        - name: webhook-cert
+          mountPath: /etc/webhook/certs
+          readOnly: true
+      volumes:
+      - name: webhook-certs
+        emptyDir: {}
+      - name: webhook-cert
+        # TODO: this path can vary, see NodeupModelContext.PathSrvKubernetes()
+        hostPath: /srv/kubernetes/pod-identity-webhook
+---
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: pod-identity-webhook
+  namespace: kube-system
+webhooks:
+- name: pod-identity-webhook.amazonaws.com
+  failurePolicy: Ignore
+  clientConfig:
+    service:
+      name: pod-identity-webhook
+      namespace: kube-system
+      path: "/mutate"
+    caBundle: TODO get from pod-identiy-webhook-ca keypair
+  rules:
+  - operations: [ "CREATE" ]
+    apiGroups: [""]
+    apiVersions: ["v1"]
+    resources: ["pods"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pod-identity-webhook
+  namespace: kube-system
+  annotations:
+    prometheus.io/port: "443"
+    prometheus.io/scheme: "https"
+    prometheus.io/scrape: "true"
+spec:
+  ports:
+  - port: 443
+    targetPort: 443
+  selector:
+    k8s-app: pod-identity-webhook

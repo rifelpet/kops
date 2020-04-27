@@ -150,6 +150,15 @@ func (b *SecretBuilder) Build(c *fi.ModelBuilderContext) error {
 		})
 	}
 
+	if b.Cluster.Spec.ServiceOIDCProvider != nil && b.Cluster.Spec.ServiceOIDCProvider.IssuerHostPath != nil {
+		if err := b.BuildCertificateTask(c, "pod-identity-webhook", "pod-identity-webhook/server.cert"); err != nil {
+			return err
+		}
+		if err := b.BuildPrivateKeyTask(c, "pod-identity-webhook", "pod-identity-webhook/server.key"); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 

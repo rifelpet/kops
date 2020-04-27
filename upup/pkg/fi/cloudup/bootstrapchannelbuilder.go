@@ -235,6 +235,27 @@ func (b *BootstrapChannelBuilder) buildAddons() *channelsapi.Addons {
 		}
 	}
 
+	if b.cluster.Spec.ServiceOIDCProvider != nil {
+		{
+			key := "pod-identity-webhook.aws"
+			version := "v0.0.1-kops.1" // v0.2.0 ???
+
+			{
+				location := key + "/k8s-1.16.yaml"
+				id := "k8s-1.16.yaml"
+
+				addons.Spec.Addons = append(addons.Spec.Addons, &channelsapi.AddonSpec{
+					Name:              fi.String(key),
+					Version:           fi.String(version),
+					Selector:          map[string]string{"k8s-addon": key},
+					Manifest:          fi.String(location),
+					KubernetesVersion: ">=1.16.0",
+					Id:                id,
+				})
+			}
+		}
+	}
+
 	kubeDNS := b.cluster.Spec.KubeDNS
 	if kubeDNS.Provider == "KubeDNS" || kubeDNS.Provider == "" {
 

@@ -248,6 +248,17 @@ func ValidateCluster(c *kops.Cluster, strict bool) field.ErrorList {
 		}
 	}
 
+	// ServiceOIDCProvider
+	{
+		provider := c.Spec.ServiceOIDCProvider
+		if provider != nil {
+			if kops.CloudProviderID(c.Spec.CloudProvider) != kops.CloudProviderAWS {
+				allErrs = append(allErrs, field.Forbidden(fieldSpec.Child("serviceOIDCProvider"), "serviceOIDCProvider is supported only in AWS"))
+			}
+			// TODO: validate issuerHostPath is only a domain name + path (no protocol)
+		}
+	}
+
 	// Check ClusterCIDR
 	if c.Spec.KubeControllerManager != nil {
 		var clusterCIDR *net.IPNet

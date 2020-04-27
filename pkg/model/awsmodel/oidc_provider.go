@@ -36,7 +36,10 @@ type OIDCProviderBuilder struct {
 
 var _ fi.ModelBuilder = &OIDCProviderBuilder{}
 
-const discoveryJSON = `
+const (
+	keypairName   = "service-account-signer"
+	stsAudience   = "sts.amazonaws.com"
+	discoveryJSON = `
 {
 		"issuer": "%v/",
 		"jwks_uri": "%v/keys.json",
@@ -55,8 +58,7 @@ const discoveryJSON = `
 						"iss"
 		]
 }`
-
-const keypairName = "service-account-signer"
+)
 
 func (b *OIDCProviderBuilder) Build(c *fi.ModelBuilderContext) error {
 	if b.Cluster.Spec.ServiceOIDCProvider == nil || b.Cluster.Spec.ServiceOIDCProvider.IssuerHostPath == nil {
@@ -74,6 +76,28 @@ func (b *OIDCProviderBuilder) Build(c *fi.ModelBuilderContext) error {
 	}
 	c.AddTask(saSigner)
 
+	// Webhook CA and certs
+	{
+		podIdentityWebhookCA := &fitasks.Keypair{
+			Name:      fi.String("pod-identity-webhook-ca"),
+			Lifecycle: b.Lifecycle,
+			Subject:   fmt.Sprintf("cn=%v", keypairName),
+			Type:      "ca",
+			Format:    format,
+		}
+		c.AddTask(podIdentityWebhookCA)
+
+		podIdentityWebhook := &fitasks.Keypair{
+			Name:      fi.String("pod-identity-webhook"),
+			Lifecycle: b.Lifecycle,
+			Signer:    podIdentityWebhookCA,
+			Subject:   "cn=pod-identity-webhook",
+			Type:      "server",
+			Format:    format,
+		}
+		c.AddTask(podIdentityWebhook)
+	}
+
 	discoveryContents := fmt.Sprintf(discoveryJSON, issuerURL, issuerURL)
 	discoveryFile := &fitasks.ManagedFile{
 		Contents:  fi.WrapResource(fi.NewStringResource(discoveryContents)),
@@ -82,6 +106,16 @@ func (b *OIDCProviderBuilder) Build(c *fi.ModelBuilderContext) error {
 		Name:      fi.String("discovery.json"),
 	}
 	c.AddTask(discoveryFile)
+
+	// TODO create keys.json from https://github.com/aws/amazon-eks-pod-identity-webhook/blob/master/hack/self-hosted/main.go
+	keysContents := ""
+	keysFile := &fitasks.ManagedFile{
+		Contents:  fi.WrapResource(fi.NewStringResource(keysContents)),
+		Lifecycle: b.Lifecycle,
+		Location:  fi.String("keys.json"),
+		Name:      fi.String("keys.json"),
+	}
+	c.AddTask(keysFile)
 
 	cert, _, _, err := b.KeyStore.FindKeypair(keypairName)
 	if err != nil {
@@ -102,7 +136,7 @@ func (b *OIDCProviderBuilder) Build(c *fi.ModelBuilderContext) error {
 		Name:        fi.String(b.ClusterName()),
 		Lifecycle:   b.Lifecycle,
 		URL:         fi.String(issuerURL),
-		ClientIDs:   []*string{fi.String("sts.amazonaws.com")},
+		ClientIDs:   []*string{fi.String(stsAudience)},
 		Thumbprints: []*string{fi.String(fingerprint)},
 	}
 	c.AddTask(oidcProvider)
