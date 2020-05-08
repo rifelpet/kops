@@ -3609,6 +3609,17 @@ func (in *ServiceOIDCProviderSpec) DeepCopyInto(out *ServiceOIDCProviderSpec) {
 		*out = new(string)
 		**out = **in
 	}
+	if in.IssuerCAThumbprints != nil {
+		in, out := &in.IssuerCAThumbprints, &out.IssuerCAThumbprints
+		*out = make([]*string, len(*in))
+		for i := range *in {
+			if (*in)[i] != nil {
+				in, out := &(*in)[i], &(*out)[i]
+				*out = new(string)
+				**out = **in
+			}
+		}
+	}
 	return
 }
 

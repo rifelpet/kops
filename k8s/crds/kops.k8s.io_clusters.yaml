@@ -3391,6 +3391,14 @@ spec:
                   issuer:
                     description: Issuer is the URL to the discovery and key documents.
                     type: string
+                  issuerCAThumbprints:
+                    description: IssuerCAThumbprint is the thumbprint of the CA serving
+                      the Issuer URL's certificate
+                    items:
+                      type: string
+                    type: array
+                required:
+                - issuerCAThumbprints
                 type: object
               sshAccess:
                 description: SSHAccess determines the permitted access to SSH Currently

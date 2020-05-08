@@ -555,6 +555,8 @@ type HTTPProxy struct {
 type ServiceOIDCProviderSpec struct {
 	// Issuer is the URL to the discovery and key documents.
 	Issuer *string `json:"issuer,omitempty"`
+	// IssuerCAThumbprint is the thumbprint of the CA serving the Issuer URL's certificate
+	IssuerCAThumbprints []*string `json:"issuerCAThumbprints"`
 }
 
 // TargetSpec allows for specifying target config in an extensible way
