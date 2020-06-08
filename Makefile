@@ -826,6 +826,10 @@ build-docs:
 
 .PHONY: build-docs-netlify
 build-docs-netlify:
+	git branch -a
+	git fetch --all
+	git branch -a
+	git checkout release-1.17
 	pip install -r ${KOPS_ROOT}/images/mkdocs/requirements.txt
 	mkdocs build
 
