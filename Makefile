@@ -828,6 +828,9 @@ build-docs:
 build-docs-netlify:
 	git branch -a
 	git fetch --all
+	git remote -vv
+	git remote add origin https://github.com/kubernetes/kops.git
+	git fetch --all
 	git branch -a
 	git checkout release-1.17
 	pip install -r ${KOPS_ROOT}/images/mkdocs/requirements.txt
