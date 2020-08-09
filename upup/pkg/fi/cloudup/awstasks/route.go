@@ -18,6 +18,7 @@ package awstasks
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
@@ -39,8 +40,12 @@ type Route struct {
 
 	// Either an InternetGateway or a NAT Gateway
 	// MUST be provided.
-	InternetGateway *InternetGateway
-	NatGateway      *NatGateway
+	InternetGateway             *InternetGateway
+	NatGateway                  *NatGateway
+	EgressOnlyInternetGatewayId *string
+	NetworkInterfaceId          *string
+	TransitGatewayId            *string
+	VpcPeeringConnectionId      *string
 }
 
 func (e *Route) Find(c *fi.Context) (*Route, error) {
@@ -221,6 +226,17 @@ func checkNotNil(s *string) *string {
 		klog.Fatal("string pointer was unexpectedly nil")
 	}
 	return s
+}
+
+// SetTarget will set the appropriate route field based on the target ID
+func (r *Route) SetTarget(target string) {
+	if strings.HasPrefix(target, "i-") {
+		//r.Instance = target
+	} else if strings.HasPrefix(target, "pcx-") {
+
+	} else if strings.HasPrefix(target, "igw-") {
+		//r.InternetGateway = aws.String(target)
+	}
 }
 
 type terraformRoute struct {

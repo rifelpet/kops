@@ -183,6 +183,18 @@ func (b *NetworkModelBuilder) Build(c *fi.ModelBuilderContext) error {
 				RouteTable:      publicRouteTable,
 				InternetGateway: igw,
 			})
+			for i, route := range b.Cluster.Spec.Routes {
+				if route.RouteTable != "public" {
+					continue
+				}
+				c.AddTask(&awstasks.Route{
+					Name:       s(fmt.Sprintf("additional-%v", i)),
+					Lifecycle:  b.Lifecycle,
+					CIDR:       s(route.CIDR),
+					RouteTable: publicRouteTable,
+					// TODO: determine target
+				})
+			}
 		}
 	}
 
@@ -420,7 +432,18 @@ func (b *NetworkModelBuilder) Build(c *fi.ModelBuilderContext) error {
 			}
 		}
 		c.AddTask(r)
-
+		for i, route := range b.Cluster.Spec.Routes {
+			if route.RouteTable != zone {
+				continue
+			}
+			c.AddTask(&awstasks.Route{
+				Name:       s(fmt.Sprintf("additional-%v-%v", zone, i)),
+				Lifecycle:  b.Lifecycle,
+				CIDR:       s(route.CIDR),
+				RouteTable: rt,
+				// TODO: determine target
+			})
+		}
 	}
 
 	return nil

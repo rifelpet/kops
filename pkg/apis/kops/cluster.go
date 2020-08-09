@@ -67,6 +67,8 @@ type ClusterSpec struct {
 	KubernetesVersion string `json:"kubernetesVersion,omitempty"`
 	// Configuration of subnets we are targeting
 	Subnets []ClusterSubnetSpec `json:"subnets,omitempty"`
+	// Routes defines additional routes to add to the network's route tables
+	Routes []RouteSpec `json:"routes,omitempty"`
 	// Project is the cloud project we should use, required on GCE
 	Project string `json:"project,omitempty"`
 	// MasterPublicName is the external DNS name for the master nodes
@@ -535,6 +537,12 @@ type ClusterSubnetSpec struct {
 	Type SubnetType `json:"type,omitempty"`
 	// PublicIP to attach to NatGateway
 	PublicIP string `json:"publicIP,omitempty"`
+}
+
+type RouteSpec struct {
+	RouteTable string `json:"routeTable,omitempty"`
+	CIDR       string `json:"cidr,omitempty"`
+	Target     string `json:"cidr,omitempty"`
 }
 
 type EgressProxySpec struct {

@@ -3421,6 +3421,17 @@ spec:
                       desired nodes.'
                     x-kubernetes-int-or-string: true
                 type: object
+              routes:
+                description: Routes defines additional routes to add to the network's
+                  route tables
+                items:
+                  properties:
+                    cidr:
+                      type: string
+                    routeTable:
+                      type: string
+                  type: object
+                type: array
               secretStore:
                 description: SecretStore is the VFS path to where secrets are stored
                 type: string
