@@ -101,6 +101,8 @@ var (
 	PublicJWKS = New("PublicJWKS", Bool(false))
 	// Azure toggles the Azure support.
 	Azure = New("Azure", Bool(false))
+	// Bottlerocket enables support for AWS Bottlerocket OS
+	Bottlerocket = New("Bottlerocket", Bool(false))
 )
 
 // FeatureFlag defines a feature flag

@@ -170,6 +170,8 @@ type InstanceGroupSpec struct {
 	CompressUserData *bool `json:"compressUserData,omitempty"`
 	// InstanceMetadata defines the EC2 instance metadata service options (AWS Only)
 	InstanceMetadata *InstanceMetadataOptions `json:"instanceMetadata,omitempty"`
+	// ImageFamily defines the Image's family. Only required for certain images - see allowed values.
+	ImageFamily *ImageFamily `json:"imageFamily,omitempty"`
 }
 
 const (
@@ -277,4 +279,13 @@ type LoadBalancer struct {
 	LoadBalancerName *string `json:"loadBalancerName,omitempty"`
 	// TargetGroupARN to associate with this instance group (AWS ALB/NLB)
 	TargetGroupARN *string `json:"targetGroupArn,omitempty"`
+}
+
+// ImageFamily specifies OS settings that need to be known before launchtime
+type ImageFamily struct {
+	Bottlerocket *Bottlerocket `json:"bottlerocket,omitempty"`
+}
+
+// Bottlerocket indicates the instances use AWS Bottlerocket OS
+type Bottlerocket struct {
 }
