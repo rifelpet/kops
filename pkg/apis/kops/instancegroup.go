@@ -164,6 +164,8 @@ type InstanceGroupSpec struct {
 	// InstanceInterruptionBehavior defines if a spot instance should be terminated, hibernated,
 	// or stopped after interruption
 	InstanceInterruptionBehavior *string `json:"instanceInterruptionBehavior,omitempty"`
+	// ImageFamily defines the Image's family. Only required for certain images - see allowed values.
+	ImageFamily *ImageFamily `json:"imageFamily,omitempty"`
 }
 
 const (
@@ -249,6 +251,15 @@ type IAMProfileSpec struct {
 	// Profile is the AWS IAM Profile to attach to instances in this instance group.
 	// Specify the ARN for the IAM instance profile. (AWS only)
 	Profile *string `json:"profile,omitempty"`
+}
+
+// ImageFamily specifies OS settings that need to be known before launchtime
+type ImageFamily struct {
+	Bottlerocket *Bottlerocket `json:"bottlerocket,omitempty"`
+}
+
+// Bottlerocket indicates the instances use AWS Bottlerocket OS
+type Bottlerocket struct {
 }
 
 // IsMaster checks if instanceGroup is a master

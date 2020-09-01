@@ -19,6 +19,7 @@ package validation
 import (
 	"testing"
 
+	"k8s.io/kops/pkg/featureflag"
 	"k8s.io/kops/pkg/nodeidentity/aws"
 
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -290,4 +291,81 @@ func TestIGCloudLabelIsIGName(t *testing.T) {
 		errs := ValidateInstanceGroup(ig, nil)
 		testErrors(t, g.label, errs, g.expected)
 	}
+}
+
+func TestIGBottlerocket(t *testing.T) {
+	featureflag.ParseFlags("+Bottlerocket")
+	unsetFeaureFlag := func() {
+		featureflag.ParseFlags("-Bottlerocket")
+	}
+	defer unsetFeaureFlag()
+	grid := []struct {
+		Cluster        *kops.Cluster
+		IG             *kops.InstanceGroup
+		ExpectedErrors int
+		Description    string
+	}{
+		{
+			Cluster: &kops.Cluster{
+				ObjectMeta: v1.ObjectMeta{
+					Name: "foo.example.com",
+				},
+				Spec: kops.ClusterSpec{
+					Authentication: &kops.AuthenticationSpec{
+						Aws: &kops.AwsAuthenticationSpec{},
+					},
+				},
+			},
+			IG: &kops.InstanceGroup{
+				ObjectMeta: v1.ObjectMeta{
+					Name: "eu-central-1a",
+				},
+				Spec: kops.InstanceGroupSpec{
+					Role: kops.InstanceGroupRoleNode,
+					ImageFamily: &kops.ImageFamily{
+						Bottlerocket: &kops.Bottlerocket{},
+					},
+				},
+			},
+			ExpectedErrors: 0,
+			Description:    "Valid bottlerocket instance group failed to validate",
+		},
+		{
+			Cluster: &kops.Cluster{
+				ObjectMeta: v1.ObjectMeta{
+					Name: "foo.k8s.local",
+				},
+				Spec: kops.ClusterSpec{},
+			},
+			IG: &kops.InstanceGroup{
+				ObjectMeta: v1.ObjectMeta{
+					Name: "eu-central-1d",
+				},
+				Spec: kops.InstanceGroupSpec{
+					Role: kops.InstanceGroupRoleMaster,
+					ImageFamily: &kops.ImageFamily{
+						Bottlerocket: &kops.Bottlerocket{},
+					},
+					Kubelet: &kops.KubeletConfigSpec{},
+					FileAssets: []kops.FileAssetSpec{
+						{},
+					},
+					AdditionalUserData: []kops.UserData{
+						{},
+					},
+					SysctlParameters: []string{""},
+				},
+			},
+			ExpectedErrors: 7,
+			Description:    "bottlerocket IG incorrectly validated",
+		},
+	}
+
+	for _, g := range grid {
+		errList := validateBottlerocket(g.IG, g.Cluster)
+		if len(errList) != g.ExpectedErrors {
+			t.Error(g.Description, len(errList), errList)
+		}
+	}
+
 }

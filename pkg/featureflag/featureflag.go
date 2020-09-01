@@ -101,6 +101,8 @@ var (
 	UseServiceAccountIAM = New("UseServiceAccountIAM", Bool(false))
 	// PublicJWKS enables public jwks access.  This is generally not as secure as republishing.
 	PublicJWKS = New("PublicJWKS", Bool(false))
+	// Bottlerocket enables support for AWS Bottlerocket OS
+	Bottlerocket = New("Bottlerocket", Bool(false))
 )
 
 // FeatureFlag defines a feature flag
