@@ -231,6 +231,9 @@ func (_ *Keypair) Render(c *fi.Context, a, e, changes *Keypair) error {
 		if err != nil {
 			return err
 		}
+		if err := e.setResources(cert); err != nil {
+			return fmt.Errorf("error setting resources: %v", err)
+		}
 
 		klog.V(8).Infof("created certificate with cn=%s", cert.Subject.CommonName)
 	}
@@ -309,4 +312,9 @@ func (e *Keypair) setResources(cert *pki.Certificate) error {
 func (e *Keypair) CertificateSHA1Fingerprint() fi.Resource {
 	e.ensureResources()
 	return e.certificateSHA1Fingerprint
+}
+
+func (e *Keypair) Certificate() fi.Resource {
+	e.ensureResources()
+	return e.certificate
 }
