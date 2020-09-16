@@ -166,6 +166,16 @@ func TestComplex(t *testing.T) {
 	newIntegrationTest("complex.example.com", "complex").withoutSSHKey().withVersion("legacy-v1alpha2").runTestTerraformAWS(t)
 }
 
+// TestBottlerocket runs the test with nodes using a bottlerocket OS
+func TestBottlerocket(t *testing.T) {
+	featureflag.ParseFlags("+Bottlerocket")
+	unsetFeaureFlag := func() {
+		featureflag.ParseFlags("-Bottlerocket")
+	}
+	defer unsetFeaureFlag()
+	newIntegrationTest("bottlerocket.example.com", "bottlerocket").withCAKey().runTestTerraformAWS(t)
+}
+
 // TestExternalPolicies tests external policies output
 func TestExternalPolicies(t *testing.T) {
 	newIntegrationTest("externalpolicies.example.com", "externalpolicies").runTestTerraformAWS(t)
