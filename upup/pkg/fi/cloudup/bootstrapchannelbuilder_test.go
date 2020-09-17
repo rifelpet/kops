@@ -121,11 +121,17 @@ func runChannelBuilderTest(t *testing.T, key string, addonManifests []string) {
 						Profile: &role,
 					},
 					Role: kopsapi.InstanceGroupRoleNode,
+					ImageFamily: &kopsapi.ImageFamily{
+						Bottlerocket: &kopsapi.Bottlerocket{},
+					},
 				},
 			},
 			{
 				Spec: kopsapi.InstanceGroupSpec{
 					Role: kopsapi.InstanceGroupRoleNode,
+					ImageFamily: &kopsapi.ImageFamily{
+						Bottlerocket: &kopsapi.Bottlerocket{},
+					},
 				},
 			},
 		},

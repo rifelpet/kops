@@ -33,6 +33,30 @@ spec:
 
 ---
 
+apiVersion: iamauthenticator.k8s.aws/v1alpha1
+kind: IAMIdentityMapping
+metadata:
+  name: bottlerocket-nodes
+spec:
+  arn: arn:aws-test:iam::123456789012:role/kops-custom-node-role
+  groups:
+  - system:nodes
+  username: system:node:{{EC2PrivateDNSName}}
+
+---
+
+apiVersion: iamauthenticator.k8s.aws/v1alpha1
+kind: IAMIdentityMapping
+metadata:
+  name: bottlerocket-nodes
+spec:
+  arn: arn:aws-test:iam::123456789012:role/nodes.minimal.example.com
+  groups:
+  - system:nodes
+  username: system:node:{{EC2PrivateDNSName}}
+
+---
+
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRole
 metadata:
