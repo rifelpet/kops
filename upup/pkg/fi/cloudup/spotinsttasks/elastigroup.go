@@ -55,7 +55,7 @@ type Elastigroup struct {
 	Product                  *string
 	Orientation              *string
 	Tags                     map[string]string
-	UserData                 *fi.ResourceHolder
+	UserData                 *fi.TaskDependentResource
 	ImageID                  *string
 	OnDemandInstanceType     *string
 	SpotInstanceTypes        []string
@@ -307,7 +307,7 @@ func (e *Elastigroup) Find(c *fi.Context) (*Elastigroup, error) {
 				}
 			}
 
-			actual.UserData = fi.WrapResource(fi.NewStringResource(string(userData)))
+			actual.UserData = &fi.TaskDependentResource{Resource: fi.NewStringResource(string(userData))}
 		}
 
 		// Network interfaces.
@@ -563,7 +563,7 @@ func (_ *Elastigroup) create(cloud awsup.AWSCloud, a, e, changes *Elastigroup) e
 			// User data.
 			{
 				if e.UserData != nil {
-					userData, err := e.UserData.AsString()
+					userData, err := fi.ResourceAsString(e.UserData.Resource)
 					if err != nil {
 						return err
 					}
@@ -903,7 +903,7 @@ func (_ *Elastigroup) update(cloud awsup.AWSCloud, a, e, changes *Elastigroup) e
 			// User data.
 			{
 				if changes.UserData != nil {
-					userData, err := e.UserData.AsString()
+					userData, err := fi.ResourceAsString(e.UserData.Resource)
 					if err != nil {
 						return err
 					}

@@ -125,7 +125,7 @@ func (t *LaunchTemplate) RenderAWS(c *awsup.AWSAPITarget, a, ep, changes *Launch
 	}
 	// @step: add the userdata
 	if t.UserData != nil {
-		d, err := t.UserData.AsBytes()
+		d, err := fi.ResourceAsBytes(t.UserData.Resource)
 		if err != nil {
 			return fmt.Errorf("error rendering LaunchTemplate UserData: %v", err)
 		}
@@ -246,7 +246,7 @@ func (t *LaunchTemplate) Find(c *fi.Context) (*LaunchTemplate, error) {
 		if err != nil {
 			return nil, fmt.Errorf("error decoding userdata: %s", err)
 		}
-		actual.UserData = fi.WrapResource(fi.NewStringResource(string(ud)))
+		actual.UserData = &fi.TaskDependentResource{Resource: fi.NewStringResource(string(ud))}
 	}
 
 	// @step: add tags

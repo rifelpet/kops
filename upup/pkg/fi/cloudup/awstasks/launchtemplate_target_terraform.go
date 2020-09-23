@@ -211,7 +211,7 @@ func (t *LaunchTemplate) RenderTerraform(target *terraform.TerraformTarget, a, e
 		}
 	}
 	if e.UserData != nil {
-		d, err := e.UserData.AsBytes()
+		d, err := fi.ResourceAsBytes(e.UserData.Resource)
 		if err != nil {
 			return err
 		}

@@ -91,7 +91,7 @@ type LaunchConfiguration struct {
 	// Tenancy. Can be either default or dedicated.
 	Tenancy *string
 	// UserData is the user data configuration
-	UserData *fi.ResourceHolder
+	UserData *fi.TaskDependentResource
 }
 
 var _ fi.CompareWithID = &LaunchConfiguration{}
@@ -216,7 +216,7 @@ func (e *LaunchConfiguration) Find(c *fi.Context) (*LaunchConfiguration, error) 
 		if err != nil {
 			return nil, fmt.Errorf("error decoding UserData: %v", err)
 		}
-		actual.UserData = fi.WrapResource(fi.NewStringResource(string(userData)))
+		actual.UserData = &fi.TaskDependentResource{Resource: fi.NewStringResource(string(userData))}
 	}
 
 	// Avoid spurious changes on ImageId
@@ -340,7 +340,7 @@ func (_ *LaunchConfiguration) RenderAWS(t *awsup.AWSAPITarget, a, e, changes *La
 	}
 
 	if e.UserData != nil {
-		d, err := e.UserData.AsBytes()
+		d, err := fi.ResourceAsBytes(e.UserData.Resource)
 		if err != nil {
 			return fmt.Errorf("error rendering AutoScalingLaunchConfiguration UserData: %v", err)
 		}
@@ -685,7 +685,7 @@ func (_ *LaunchConfiguration) RenderCloudformation(t *cloudformation.Cloudformat
 	}
 
 	if e.UserData != nil {
-		d, err := e.UserData.AsBytes()
+		d, err := fi.ResourceAsBytes(e.UserData)
 		if err != nil {
 			return fmt.Errorf("error rendering AutoScalingLaunchConfiguration UserData: %v", err)
 		}

@@ -52,7 +52,7 @@ type Ocean struct {
 	InstanceTypesWhitelist   []string
 	InstanceTypesBlacklist   []string
 	Tags                     map[string]string
-	UserData                 *fi.ResourceHolder
+	UserData                 *fi.TaskDependentResource
 	ImageID                  *string
 	IAMInstanceProfile       *awstasks.IAMInstanceProfile
 	SSHKey                   *awstasks.SSHKey
@@ -246,7 +246,7 @@ func (o *Ocean) Find(c *fi.Context) (*Ocean, error) {
 				}
 			}
 
-			actual.UserData = fi.WrapResource(fi.NewStringResource(string(userData)))
+			actual.UserData = &fi.TaskDependentResource{Resource: fi.NewStringResource(string(userData))}
 		}
 
 		// EBS optimization.
@@ -441,7 +441,7 @@ func (_ *Ocean) create(cloud awsup.AWSCloud, a, e, changes *Ocean) error {
 			// User data.
 			{
 				if e.UserData != nil {
-					userData, err := e.UserData.AsString()
+					userData, err := fi.ResourceAsString(e.UserData.Resource)
 					if err != nil {
 						return err
 					}
@@ -737,7 +737,7 @@ func (_ *Ocean) update(cloud awsup.AWSCloud, a, e, changes *Ocean) error {
 			// User data.
 			{
 				if changes.UserData != nil {
-					userData, err := e.UserData.AsString()
+					userData, err := fi.ResourceAsString(e.UserData.Resource)
 					if err != nil {
 						return err
 					}

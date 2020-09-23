@@ -43,7 +43,7 @@ type Instance struct {
 	SSHKey           *string
 	ServerGroup      *ServerGroup
 	Role             *string
-	UserData         *fi.ResourceHolder
+	UserData         *fi.TaskDependentResource
 	Metadata         map[string]string
 	AvailabilityZone *string
 	SecurityGroups   []string
@@ -266,7 +266,7 @@ func (_ *Instance) RenderOpenstack(t *openstack.OpenstackAPITarget, a, e, change
 			SecurityGroups: e.SecurityGroups,
 		}
 		if e.UserData != nil {
-			bytes, err := e.UserData.AsBytes()
+			bytes, err := fi.ResourceAsBytes(e.UserData.Resource)
 			if err != nil {
 				return err
 			}

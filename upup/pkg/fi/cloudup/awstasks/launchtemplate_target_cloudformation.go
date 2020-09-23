@@ -212,7 +212,7 @@ func (t *LaunchTemplate) RenderCloudformation(target *cloudformation.Cloudformat
 		}
 	}
 	if e.UserData != nil {
-		d, err := e.UserData.AsBytes()
+		d, err := fi.ResourceAsBytes(e.UserData.Resource)
 		if err != nil {
 			return err
 		}

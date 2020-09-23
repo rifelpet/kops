@@ -90,7 +90,7 @@ func (b *AutoscalingGroupModelBuilder) Build(c *fi.ModelBuilderContext) error {
 					"logging-write",
 				},
 				Metadata: map[string]*fi.ResourceHolder{
-					"startup-script": startupScript,
+					"startup-script": fi.WrapResource(startupScript),
 					//"config": resources/config.yaml $nodeset.Name
 					"cluster-name": fi.WrapResource(fi.NewStringResource(b.ClusterName())),
 					nodeidentitygce.MetadataKeyInstanceGroupName: fi.WrapResource(fi.NewStringResource(ig.Name)),

@@ -40,7 +40,7 @@ type LaunchSpec struct {
 	Lifecycle *fi.Lifecycle
 
 	ID                 *string
-	UserData           *fi.ResourceHolder
+	UserData           *fi.TaskDependentResource
 	SecurityGroups     []*awstasks.SecurityGroup
 	Subnets            []*awstasks.Subnet
 	IAMInstanceProfile *awstasks.IAMInstanceProfile
@@ -167,7 +167,7 @@ func (o *LaunchSpec) Find(c *fi.Context) (*LaunchSpec, error) {
 			}
 		}
 
-		actual.UserData = fi.WrapResource(fi.NewStringResource(string(userData)))
+		actual.UserData = &fi.TaskDependentResource{Resource: fi.NewStringResource(string(userData))}
 	}
 
 	// IAM instance profile.
@@ -330,7 +330,7 @@ func (_ *LaunchSpec) create(cloud awsup.AWSCloud, a, e, changes *LaunchSpec) err
 	// User data.
 	{
 		if e.UserData != nil {
-			userData, err := e.UserData.AsString()
+			userData, err := fi.ResourceAsString(e.UserData.Resource)
 			if err != nil {
 				return err
 			}
@@ -491,7 +491,7 @@ func (_ *LaunchSpec) update(cloud awsup.AWSCloud, a, e, changes *LaunchSpec) err
 	// User data.
 	{
 		if changes.UserData != nil {
-			userData, err := e.UserData.AsString()
+			userData, err := fi.ResourceAsString(e.UserData.Resource)
 			if err != nil {
 				return err
 			}
