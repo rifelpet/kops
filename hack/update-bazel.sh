@@ -20,13 +20,14 @@ set -o pipefail
 
 . "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 
+cd "${KOPS_ROOT}/hack"
+go build -o "${TOOLS_BIN}/gazelle" github.com/bazelbuild/bazel-gazelle/cmd/gazelle
 cd "${KOPS_ROOT}"
-
-GOBIN="${TOOLS_BIN}" go install ./vendor/github.com/bazelbuild/bazel-gazelle/cmd/gazelle
 
 "${TOOLS_BIN}/gazelle" fix \
   -external=vendored \
   -exclude=tests/e2e \
+  -exclude=hack \
   -mode=fix \
   -proto=disable \
   -repo_root="${KOPS_ROOT}"
