@@ -12,6 +12,7 @@
 // upup/models/cloudup/resources/addons/core.addons.k8s.io/k8s-1.12.yaml.template
 // upup/models/cloudup/resources/addons/core.addons.k8s.io/v1.4.0.yaml
 // upup/models/cloudup/resources/addons/coredns.addons.k8s.io/k8s-1.12.yaml.template
+// upup/models/cloudup/resources/addons/csr-approver.addons.k8s.io/k8s-1.20.yaml
 // upup/models/cloudup/resources/addons/digitalocean-cloud-controller.addons.k8s.io/k8s-1.8.yaml.template
 // upup/models/cloudup/resources/addons/dns-controller.addons.k8s.io/k8s-1.12.yaml.template
 // upup/models/cloudup/resources/addons/external-dns.addons.k8s.io/README.md
@@ -27982,6 +27983,49 @@ func cloudupResourcesAddonsCorednsAddonsK8sIoK8s112YamlTemplate() (*asset, error
 	return a, nil
 }
 
+var _cloudupResourcesAddonsCsrApproverAddonsK8sIoK8s120Yaml = []byte(`# Approve all CSRs for the group "system:bootstrappers"
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: auto-approve-csrs-for-group
+subjects:
+- kind: Group
+  name: system:bootstrappers
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: system:certificates.k8s.io:certificatesigningrequests:nodeclient
+  apiGroup: rbac.authorization.k8s.io
+---
+# Approve renewal CSRs for the group "system:nodes"
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: auto-approve-renewals-for-nodes
+subjects:
+- kind: Group
+  name: system:nodes
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: system:certificates.k8s.io:certificatesigningrequests:selfnodeclient
+  apiGroup: rbac.authorization.k8s.io`)
+
+func cloudupResourcesAddonsCsrApproverAddonsK8sIoK8s120YamlBytes() ([]byte, error) {
+	return _cloudupResourcesAddonsCsrApproverAddonsK8sIoK8s120Yaml, nil
+}
+
+func cloudupResourcesAddonsCsrApproverAddonsK8sIoK8s120Yaml() (*asset, error) {
+	bytes, err := cloudupResourcesAddonsCsrApproverAddonsK8sIoK8s120YamlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "cloudup/resources/addons/csr-approver.addons.k8s.io/k8s-1.20.yaml", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 var _cloudupResourcesAddonsDigitaloceanCloudControllerAddonsK8sIoK8s18YamlTemplate = []byte(`---
 apiVersion: v1
 kind: Secret
@@ -42642,6 +42686,7 @@ var _bindata = map[string]func() (*asset, error){
 	"cloudup/resources/addons/core.addons.k8s.io/k8s-1.12.yaml.template":                                  cloudupResourcesAddonsCoreAddonsK8sIoK8s112YamlTemplate,
 	"cloudup/resources/addons/core.addons.k8s.io/v1.4.0.yaml":                                             cloudupResourcesAddonsCoreAddonsK8sIoV140Yaml,
 	"cloudup/resources/addons/coredns.addons.k8s.io/k8s-1.12.yaml.template":                               cloudupResourcesAddonsCorednsAddonsK8sIoK8s112YamlTemplate,
+	"cloudup/resources/addons/csr-approver.addons.k8s.io/k8s-1.20.yaml":                                   cloudupResourcesAddonsCsrApproverAddonsK8sIoK8s120Yaml,
 	"cloudup/resources/addons/digitalocean-cloud-controller.addons.k8s.io/k8s-1.8.yaml.template":          cloudupResourcesAddonsDigitaloceanCloudControllerAddonsK8sIoK8s18YamlTemplate,
 	"cloudup/resources/addons/dns-controller.addons.k8s.io/k8s-1.12.yaml.template":                        cloudupResourcesAddonsDnsControllerAddonsK8sIoK8s112YamlTemplate,
 	"cloudup/resources/addons/external-dns.addons.k8s.io/README.md":                                       cloudupResourcesAddonsExternalDnsAddonsK8sIoReadmeMd,
@@ -42752,6 +42797,9 @@ var _bintree = &bintree{nil, map[string]*bintree{
 				}},
 				"coredns.addons.k8s.io": {nil, map[string]*bintree{
 					"k8s-1.12.yaml.template": {cloudupResourcesAddonsCorednsAddonsK8sIoK8s112YamlTemplate, map[string]*bintree{}},
+				}},
+				"csr-approver.addons.k8s.io": {nil, map[string]*bintree{
+					"k8s-1.20.yaml": {cloudupResourcesAddonsCsrApproverAddonsK8sIoK8s120Yaml, map[string]*bintree{}},
 				}},
 				"digitalocean-cloud-controller.addons.k8s.io": {nil, map[string]*bintree{
 					"k8s-1.8.yaml.template": {cloudupResourcesAddonsDigitaloceanCloudControllerAddonsK8sIoK8s18YamlTemplate, map[string]*bintree{}},
