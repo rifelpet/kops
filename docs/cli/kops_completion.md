@@ -5,6 +5,7 @@
 
 Output shell completion code for the given shell (bash or zsh).
 
+
 ### Synopsis
 
 Output shell completion code for the specified shell (bash or zsh). The shell code must be evaluated to provide interactive completion of kops commands. This can be done by sourcing it from the .bash_profile.

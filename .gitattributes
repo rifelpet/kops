@@ -1,1 +1,4 @@
 BUILD.bazel linguist-generated=true
+^/docs/cli linguist-generated=true
+bindata.go linguist-generated=true
+^/vendor linguist-generated=true
