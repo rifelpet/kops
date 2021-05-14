@@ -80,6 +80,7 @@ type NetworkLoadBalancerListener struct {
 	TargetGroupName  string
 	SSLCertificateID string
 	SSLPolicy        string
+	Tags             map[string]string
 }
 
 func (e *NetworkLoadBalancerListener) mapToAWS(targetGroups []*TargetGroup, loadBalancerArn string) (*elbv2.CreateListenerInput, error) {
@@ -102,6 +103,7 @@ func (e *NetworkLoadBalancerListener) mapToAWS(targetGroups []*TargetGroup, load
 		},
 		LoadBalancerArn: aws.String(loadBalancerArn),
 		Port:            aws.Int64(int64(e.Port)),
+		Tags:            awsup.ELBv2Tags(e.Tags),
 	}
 
 	if e.SSLCertificateID != "" {
@@ -749,6 +751,7 @@ type terraformNetworkLoadBalancerListener struct {
 	CertificateARN *string                                      `json:"certificate_arn,omitempty" cty:"certificate_arn"`
 	SSLPolicy      *string                                      `json:"ssl_policy,omitempty" cty:"ssl_policy"`
 	DefaultAction  []terraformNetworkLoadBalancerListenerAction `json:"default_action" cty:"default_action"`
+	Tags           map[string]string                            `json:"tags" cty:"tags"`
 }
 
 type terraformNetworkLoadBalancerListenerAction struct {
@@ -798,6 +801,7 @@ func (_ *NetworkLoadBalancer) RenderTerraform(t *terraform.TerraformTarget, a, e
 					TargetGroupARN: listenerTG.TerraformLink(),
 				},
 			},
+			Tags: listener.Tags,
 		}
 		if listener.SSLCertificateID != "" {
 			listenerTF.CertificateARN = &listener.SSLCertificateID

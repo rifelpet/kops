@@ -134,10 +134,12 @@ func (b *APILoadBalancerBuilder) Build(c *fi.ModelBuilderContext) error {
 			"443": {InstancePort: 443},
 		}
 
+		tcpName := b.NLBTargetGroupName("tcp")
 		nlbListeners := []*awstasks.NetworkLoadBalancerListener{
 			{
 				Port:            443,
-				TargetGroupName: b.NLBTargetGroupName("tcp"),
+				TargetGroupName: tcpName,
+				Tags:            b.CloudTags(tcpName, false),
 			},
 		}
 
@@ -145,10 +147,12 @@ func (b *APILoadBalancerBuilder) Build(c *fi.ModelBuilderContext) error {
 			listeners["443"].SSLCertificateID = lbSpec.SSLCertificate
 			nlbListeners[0].Port = 8443
 
+			name := b.NLBTargetGroupName("tls")
 			nlbListener := &awstasks.NetworkLoadBalancerListener{
 				Port:             443,
-				TargetGroupName:  b.NLBTargetGroupName("tls"),
+				TargetGroupName:  name,
 				SSLCertificateID: lbSpec.SSLCertificate,
+				Tags:             b.CloudTags(name, false),
 			}
 			if lbSpec.SSLPolicy != nil {
 				nlbListener.SSLPolicy = *lbSpec.SSLPolicy
@@ -160,13 +164,6 @@ func (b *APILoadBalancerBuilder) Build(c *fi.ModelBuilderContext) error {
 			klog.V(1).Infof("WARNING: You are overwriting the Load Balancers, Security Group. When this is done you are responsible for ensure the correct rules!")
 		}
 
-		tags := b.CloudTags(loadBalancerName, false)
-		for k, v := range b.Cluster.Spec.CloudLabels {
-			tags[k] = v
-		}
-		// Override the returned name to be the expected ELB name
-		tags["Name"] = "api." + b.ClusterName()
-
 		name := b.NLBName("api")
 		nlb = &awstasks.NetworkLoadBalancer{
 			Name:      &name,
@@ -177,7 +174,7 @@ func (b *APILoadBalancerBuilder) Build(c *fi.ModelBuilderContext) error {
 			Listeners:        nlbListeners,
 			TargetGroups:     make([]*awstasks.TargetGroup, 0),
 
-			Tags: tags,
+			Tags: b.CloudTags("api."+b.ClusterName(), false),
 			VPC:  b.LinkToVPC(),
 			Type: fi.String("network"),
 		}
@@ -206,7 +203,7 @@ func (b *APILoadBalancerBuilder) Build(c *fi.ModelBuilderContext) error {
 				IdleTimeout: fi.Int64(int64(idleTimeout.Seconds())),
 			},
 
-			Tags: tags,
+			Tags: b.CloudTags("api."+b.ClusterName(), false),
 		}
 
 		if lbSpec.CrossZoneLoadBalancing == nil {

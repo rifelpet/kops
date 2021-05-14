@@ -543,6 +543,13 @@ resource "aws_lb_listener" "api-complex-example-com-443" {
   port              = 443
   protocol          = "TLS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
+  tags = {
+    "KubernetesCluster"                         = "complex.example.com"
+    "Name"                                      = "tls-complex-example-com-5nursn"
+    "Owner"                                     = "John Doe"
+    "foo/bar"                                   = "fib+baz"
+    "kubernetes.io/cluster/complex.example.com" = "owned"
+  }
 }
 
 resource "aws_lb_listener" "api-complex-example-com-8443" {
@@ -553,6 +560,13 @@ resource "aws_lb_listener" "api-complex-example-com-8443" {
   load_balancer_arn = aws_lb.api-complex-example-com.id
   port              = 8443
   protocol          = "TCP"
+  tags = {
+    "KubernetesCluster"                         = "complex.example.com"
+    "Name"                                      = "tcp-complex-example-com-vpjolq"
+    "Owner"                                     = "John Doe"
+    "foo/bar"                                   = "fib+baz"
+    "kubernetes.io/cluster/complex.example.com" = "owned"
+  }
 }
 
 resource "aws_lb_target_group" "tcp-complex-example-com-vpjolq" {
@@ -1018,7 +1032,7 @@ terraform {
   required_providers {
     aws = {
       "source"  = "hashicorp/aws"
-      "version" = ">= 3.34.0"
+      "version" = ">= 3.40.0"
     }
   }
 }
