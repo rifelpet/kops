@@ -43,6 +43,9 @@ type MockEC2 struct {
 	securityGroupNumber int
 	SecurityGroups      map[string]*ec2.SecurityGroup
 
+	securityGroupRuleNumber int
+	securityGroupRules      map[string]*ec2.SecurityGroupRule
+
 	subnets map[string]*subnetInfo
 
 	Volumes map[string]*ec2.Volume
@@ -82,6 +85,9 @@ func (m *MockEC2) All() map[string]interface{} {
 		all[aws.StringValue(o.ImageId)] = o
 	}
 	for id, o := range m.SecurityGroups {
+		all[id] = o
+	}
+	for id, o := range m.securityGroupRules {
 		all[id] = o
 	}
 	for id, o := range m.subnets {

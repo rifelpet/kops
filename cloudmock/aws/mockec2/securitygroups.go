@@ -175,6 +175,51 @@ func (m *MockEC2) DescribeStaleSecurityGroupsWithContext(aws.Context, *ec2.Descr
 func (m *MockEC2) DescribeStaleSecurityGroups(*ec2.DescribeStaleSecurityGroupsInput) (*ec2.DescribeStaleSecurityGroupsOutput, error) {
 	panic("Not implemented")
 }
+func (m *MockEC2) DescribeSecurityGroupRules(request *ec2.DescribeSecurityGroupRulesInput) (*ec2.DescribeSecurityGroupRulesOutput, error) {
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
+
+	klog.Infof("DescribeSecurityGroupRules: %v", request)
+
+	rules := make([]*ec2.SecurityGroupRule, 0)
+
+	for _, sgr := range m.securityGroupRules {
+		allFiltersMatch := true
+		for _, filter := range request.Filters {
+			match := false
+			switch *filter.Name {
+
+			case "group-id":
+				for _, v := range filter.Values {
+					if sgr.GroupId != nil && *sgr.GroupId == *v {
+						match = true
+					}
+				}
+			case "security-group-rule-id":
+				for _, v := range filter.Values {
+					if sgr.SecurityGroupRuleId != nil && *sgr.SecurityGroupRuleId == *v {
+						match = true
+					}
+				}
+			default:
+				klog.Fatalf("DescribeSecurityGroupRules filter not implemented: %v", *filter.Name)
+			}
+
+			if !match {
+				allFiltersMatch = false
+				break
+			}
+		}
+		if !allFiltersMatch {
+			continue
+		}
+		rules = append(rules, sgr)
+	}
+
+	return &ec2.DescribeSecurityGroupRulesOutput{
+		SecurityGroupRules: rules,
+	}, nil
+}
 func (m *MockEC2) RevokeSecurityGroupEgressRequest(*ec2.RevokeSecurityGroupEgressInput) (*request.Request, *ec2.RevokeSecurityGroupEgressOutput) {
 	panic("Not implemented")
 }
@@ -244,34 +289,75 @@ func (m *MockEC2) AuthorizeSecurityGroupEgress(request *ec2.AuthorizeSecurityGro
 		return nil, fmt.Errorf("sg not found")
 	}
 
-	if request.CidrIp != nil {
-		if request.SourceSecurityGroupName != nil {
-			klog.Fatalf("SourceSecurityGroupName not implemented")
-		}
-		if request.SourceSecurityGroupOwnerId != nil {
-			klog.Fatalf("SourceSecurityGroupOwnerId not implemented")
-		}
+	newRules := make([]*ec2.SecurityGroupRule, 0)
 
-		p := &ec2.IpPermission{
-			FromPort:   request.FromPort,
-			ToPort:     request.ToPort,
-			IpProtocol: request.IpProtocol,
-		}
+	tags := tagSpecificationsToTags(request.TagSpecifications, ec2.ResourceTypeSecurityGroupRule)
 
-		if request.CidrIp != nil {
-			p.IpRanges = append(p.IpRanges, &ec2.IpRange{CidrIp: request.CidrIp})
-		}
+	baseRule := ec2.SecurityGroupRule{
+		GroupId:  request.GroupId,
+		IsEgress: aws.Bool(true),
+		Tags:     tags,
+	}
+	for _, ipPerm := range request.IpPermissions {
+		rule := baseRule
+		rule.FromPort = ipPerm.FromPort
+		rule.ToPort = ipPerm.ToPort
+		rule.IpProtocol = ipPerm.IpProtocol
+		for _, ip := range ipPerm.IpRanges {
+			newRule := rule
+			newRule.CidrIpv4 = ip.CidrIp
+			newRule.Description = ip.Description
 
-		sg.IpPermissionsEgress = append(sg.IpPermissionsEgress, p)
+			m.securityGroupNumber++
+			n := m.securityGroupNumber
+			id := fmt.Sprintf("sg-%d", n)
+			newRule.SecurityGroupRuleId = aws.String(id)
+			if m.securityGroupRules == nil {
+				m.securityGroupRules = make(map[string]*ec2.SecurityGroupRule)
+			}
+			m.securityGroupRules[id] = &newRule
+			newRules = append(newRules, &newRule)
+		}
+		for _, ip := range ipPerm.Ipv6Ranges {
+			newRule := rule
+			newRule.CidrIpv6 = ip.CidrIpv6
+			newRule.Description = ip.Description
+
+			m.securityGroupNumber++
+			n := m.securityGroupNumber
+			id := fmt.Sprintf("sg-%d", n)
+			newRule.SecurityGroupRuleId = aws.String(id)
+			if m.securityGroupRules == nil {
+				m.securityGroupRules = make(map[string]*ec2.SecurityGroupRule)
+			}
+			m.securityGroupRules[id] = &newRule
+			newRules = append(newRules, &newRule)
+		}
+		for _, sourceGroup := range ipPerm.UserIdGroupPairs {
+			newRule := rule
+			newRule.Description = sourceGroup.Description
+			newRule.ReferencedGroupInfo = &ec2.ReferencedSecurityGroup{
+				GroupId:                sourceGroup.GroupId,
+				UserId:                 sourceGroup.UserId,
+				PeeringStatus:          sourceGroup.PeeringStatus,
+				VpcId:                  sourceGroup.VpcId,
+				VpcPeeringConnectionId: sourceGroup.VpcPeeringConnectionId,
+			}
+			m.securityGroupNumber++
+			n := m.securityGroupNumber
+			id := fmt.Sprintf("sg-%d", n)
+			newRule.SecurityGroupRuleId = aws.String(id)
+			if m.securityGroupRules == nil {
+				m.securityGroupRules = make(map[string]*ec2.SecurityGroupRule)
+			}
+			m.securityGroupRules[id] = &newRule
+			newRules = append(newRules, &newRule)
+		}
 	}
 
-	sg.IpPermissionsEgress = append(sg.IpPermissionsEgress, request.IpPermissions...)
-
-	// TODO: We need to fold permissions
-
-	response := &ec2.AuthorizeSecurityGroupEgressOutput{}
-	return response, nil
+	return &ec2.AuthorizeSecurityGroupEgressOutput{SecurityGroupRules: newRules}, nil
 }
+
 func (m *MockEC2) AuthorizeSecurityGroupIngressRequest(*ec2.AuthorizeSecurityGroupIngressInput) (*request.Request, *ec2.AuthorizeSecurityGroupIngressOutput) {
 	panic("Not implemented")
 }
@@ -300,31 +386,71 @@ func (m *MockEC2) AuthorizeSecurityGroupIngress(request *ec2.AuthorizeSecurityGr
 		return nil, fmt.Errorf("sg not found")
 	}
 
-	if request.CidrIp != nil {
-		if request.SourceSecurityGroupName != nil {
-			klog.Fatalf("SourceSecurityGroupName not implemented")
-		}
-		if request.SourceSecurityGroupOwnerId != nil {
-			klog.Fatalf("SourceSecurityGroupOwnerId not implemented")
-		}
+	newRules := make([]*ec2.SecurityGroupRule, 0)
 
-		p := &ec2.IpPermission{
-			FromPort:   request.FromPort,
-			ToPort:     request.ToPort,
-			IpProtocol: request.IpProtocol,
-		}
+	tags := tagSpecificationsToTags(request.TagSpecifications, ec2.ResourceTypeSecurityGroupRule)
 
-		if request.CidrIp != nil {
-			p.IpRanges = append(p.IpRanges, &ec2.IpRange{CidrIp: request.CidrIp})
-		}
+	baseRule := ec2.SecurityGroupRule{
+		GroupId:  request.GroupId,
+		IsEgress: aws.Bool(false),
+		Tags:     tags,
+	}
+	for _, ipPerm := range request.IpPermissions {
+		rule := baseRule
+		rule.FromPort = ipPerm.FromPort
+		rule.ToPort = ipPerm.ToPort
+		rule.IpProtocol = ipPerm.IpProtocol
+		for _, ip := range ipPerm.IpRanges {
+			newRule := rule
+			newRule.CidrIpv4 = ip.CidrIp
+			newRule.Description = ip.Description
 
-		sg.IpPermissions = append(sg.IpPermissions, p)
+			m.securityGroupNumber++
+			n := m.securityGroupNumber
+			id := fmt.Sprintf("sg-%d", n)
+			newRule.SecurityGroupRuleId = aws.String(id)
+			if m.securityGroupRules == nil {
+				m.securityGroupRules = make(map[string]*ec2.SecurityGroupRule)
+			}
+			m.securityGroupRules[id] = &newRule
+			newRules = append(newRules, &newRule)
+		}
+		for _, ip := range ipPerm.Ipv6Ranges {
+			newRule := rule
+			newRule.CidrIpv6 = ip.CidrIpv6
+			newRule.Description = ip.Description
+
+			m.securityGroupNumber++
+			n := m.securityGroupNumber
+			id := fmt.Sprintf("sg-%d", n)
+			newRule.SecurityGroupRuleId = aws.String(id)
+			if m.securityGroupRules == nil {
+				m.securityGroupRules = make(map[string]*ec2.SecurityGroupRule)
+			}
+			m.securityGroupRules[id] = &newRule
+			newRules = append(newRules, &newRule)
+		}
+		for _, sourceGroup := range ipPerm.UserIdGroupPairs {
+			newRule := rule
+			newRule.Description = sourceGroup.Description
+			newRule.ReferencedGroupInfo = &ec2.ReferencedSecurityGroup{
+				GroupId:                sourceGroup.GroupId,
+				UserId:                 sourceGroup.UserId,
+				PeeringStatus:          sourceGroup.PeeringStatus,
+				VpcId:                  sourceGroup.VpcId,
+				VpcPeeringConnectionId: sourceGroup.VpcPeeringConnectionId,
+			}
+			m.securityGroupNumber++
+			n := m.securityGroupNumber
+			id := fmt.Sprintf("sg-%d", n)
+			newRule.SecurityGroupRuleId = aws.String(id)
+			if m.securityGroupRules == nil {
+				m.securityGroupRules = make(map[string]*ec2.SecurityGroupRule)
+			}
+			m.securityGroupRules[id] = &newRule
+			newRules = append(newRules, &newRule)
+		}
 	}
 
-	sg.IpPermissions = append(sg.IpPermissions, request.IpPermissions...)
-
-	// TODO: We need to fold permissions
-
-	response := &ec2.AuthorizeSecurityGroupIngressOutput{}
-	return response, nil
+	return &ec2.AuthorizeSecurityGroupIngressOutput{SecurityGroupRules: newRules}, nil
 }

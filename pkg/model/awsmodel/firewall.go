@@ -77,22 +77,30 @@ func (b *FirewallModelBuilder) buildNodeRules(c *fi.ModelBuilderContext) ([]Secu
 	for _, src := range nodeGroups {
 		// Allow full egress
 		{
+			name := "ipv4-node-egress" + src.Suffix
 			t := &awstasks.SecurityGroupRule{
-				Name:          fi.String("ipv4-node-egress" + src.Suffix),
+				Name:          fi.String(name),
 				Lifecycle:     b.Lifecycle,
 				SecurityGroup: src.Task,
 				Egress:        fi.Bool(true),
 				CIDR:          fi.String("0.0.0.0/0"),
+				Tags: map[string]string{
+					"kops.kubernetes.io/security-group-rule": name,
+				},
 			}
 			AddDirectionalGroupRule(c, t)
 		}
 		{
+			name := "ipv6-node-egress" + src.Suffix
 			t := &awstasks.SecurityGroupRule{
-				Name:          fi.String("ipv6-node-egress" + src.Suffix),
+				Name:          fi.String(name),
 				Lifecycle:     b.Lifecycle,
 				SecurityGroup: src.Task,
 				Egress:        fi.Bool(true),
 				IPv6CIDR:      fi.String("::/0"),
+				Tags: map[string]string{
+					"kops.kubernetes.io/security-group-rule": name,
+				},
 			}
 			AddDirectionalGroupRule(c, t)
 		}
@@ -101,11 +109,15 @@ func (b *FirewallModelBuilder) buildNodeRules(c *fi.ModelBuilderContext) ([]Secu
 		for _, dest := range nodeGroups {
 			suffix := JoinSuffixes(src, dest)
 
+			name := "all-node-to-node" + suffix
 			t := &awstasks.SecurityGroupRule{
-				Name:          fi.String("all-node-to-node" + suffix),
+				Name:          fi.String(name),
 				Lifecycle:     b.Lifecycle,
 				SecurityGroup: dest.Task,
 				SourceGroup:   src.Task,
+				Tags: map[string]string{
+					"kops.kubernetes.io/security-group-rule": name,
+				},
 			}
 			AddDirectionalGroupRule(c, t)
 		}
@@ -168,26 +180,34 @@ func (b *FirewallModelBuilder) applyNodeToMasterBlockSpecificPorts(c *fi.ModelBu
 			suffix := JoinSuffixes(nodeGroup, masterGroup)
 
 			for _, r := range udpRanges {
+				name := fmt.Sprintf("node-to-master-udp-%d-%d%s", r.From, r.To, suffix)
 				t := &awstasks.SecurityGroupRule{
-					Name:          fi.String(fmt.Sprintf("node-to-master-udp-%d-%d%s", r.From, r.To, suffix)),
+					Name:          fi.String(name),
 					Lifecycle:     b.Lifecycle,
 					SecurityGroup: masterGroup.Task,
 					SourceGroup:   nodeGroup.Task,
 					FromPort:      fi.Int64(int64(r.From)),
 					ToPort:        fi.Int64(int64(r.To)),
 					Protocol:      fi.String("udp"),
+					Tags: map[string]string{
+						"kops.kubernetes.io/security-group-rule": name,
+					},
 				}
 				AddDirectionalGroupRule(c, t)
 			}
 			for _, r := range tcpRanges {
+				name := fmt.Sprintf("node-to-master-tcp-%d-%d%s", r.From, r.To, suffix)
 				t := &awstasks.SecurityGroupRule{
-					Name:          fi.String(fmt.Sprintf("node-to-master-tcp-%d-%d%s", r.From, r.To, suffix)),
+					Name:          fi.String(name),
 					Lifecycle:     b.Lifecycle,
 					SecurityGroup: masterGroup.Task,
 					SourceGroup:   nodeGroup.Task,
 					FromPort:      fi.Int64(int64(r.From)),
 					ToPort:        fi.Int64(int64(r.To)),
 					Protocol:      fi.String("tcp"),
+					Tags: map[string]string{
+						"kops.kubernetes.io/security-group-rule": name,
+					},
 				}
 				AddDirectionalGroupRule(c, t)
 			}
@@ -201,12 +221,16 @@ func (b *FirewallModelBuilder) applyNodeToMasterBlockSpecificPorts(c *fi.ModelBu
 					klog.Warningf("unknown protocol %q - naming by number", awsName)
 				}
 
+				sgrName := fmt.Sprintf("node-to-master-protocol-%s%s", name, suffix)
 				t := &awstasks.SecurityGroupRule{
-					Name:          fi.String(fmt.Sprintf("node-to-master-protocol-%s%s", name, suffix)),
+					Name:          fi.String(sgrName),
 					Lifecycle:     b.Lifecycle,
 					SecurityGroup: masterGroup.Task,
 					SourceGroup:   nodeGroup.Task,
 					Protocol:      fi.String(awsName),
+					Tags: map[string]string{
+						"kops.kubernetes.io/security-group-rule": sgrName,
+					},
 				}
 				AddDirectionalGroupRule(c, t)
 			}
@@ -219,12 +243,16 @@ func (b *FirewallModelBuilder) applyNodeToMasterBlockSpecificPorts(c *fi.ModelBu
 		for _, src := range nodeGroups {
 			for _, dest := range masterGroups {
 				suffix := JoinSuffixes(src, dest)
+				name := "all-nodes-to-master" + suffix
 
 				t := &awstasks.SecurityGroupRule{
-					Name:          fi.String("all-nodes-to-master" + suffix),
+					Name:          fi.String(name),
 					Lifecycle:     b.Lifecycle,
 					SecurityGroup: dest.Task,
 					SourceGroup:   src.Task,
+					Tags: map[string]string{
+						"kops.kubernetes.io/security-group-rule": name,
+					},
 				}
 				AddDirectionalGroupRule(c, t)
 			}
@@ -247,22 +275,30 @@ func (b *FirewallModelBuilder) buildMasterRules(c *fi.ModelBuilderContext, nodeG
 	for _, src := range masterGroups {
 		// Allow full egress
 		{
+			name := "ipv4-master-egress" + src.Suffix
 			t := &awstasks.SecurityGroupRule{
-				Name:          fi.String("ipv4-master-egress" + src.Suffix),
+				Name:          fi.String(name),
 				Lifecycle:     b.Lifecycle,
 				SecurityGroup: src.Task,
 				Egress:        fi.Bool(true),
 				CIDR:          fi.String("0.0.0.0/0"),
+				Tags: map[string]string{
+					"kops.kubernetes.io/security-group-rule": name,
+				},
 			}
 			AddDirectionalGroupRule(c, t)
 		}
 		{
+			name := "ipv6-master-egress" + src.Suffix
 			t := &awstasks.SecurityGroupRule{
-				Name:          fi.String("ipv6-master-egress" + src.Suffix),
+				Name:          fi.String(name),
 				Lifecycle:     b.Lifecycle,
 				SecurityGroup: src.Task,
 				Egress:        fi.Bool(true),
 				IPv6CIDR:      fi.String("::/0"),
+				Tags: map[string]string{
+					"kops.kubernetes.io/security-group-rule": name,
+				},
 			}
 			AddDirectionalGroupRule(c, t)
 		}
@@ -271,11 +307,15 @@ func (b *FirewallModelBuilder) buildMasterRules(c *fi.ModelBuilderContext, nodeG
 		for _, dest := range masterGroups {
 			suffix := JoinSuffixes(src, dest)
 
+			name := "all-master-to-master" + suffix
 			t := &awstasks.SecurityGroupRule{
-				Name:          fi.String("all-master-to-master" + suffix),
+				Name:          fi.String(name),
 				Lifecycle:     b.Lifecycle,
 				SecurityGroup: dest.Task,
 				SourceGroup:   src.Task,
+				Tags: map[string]string{
+					"kops.kubernetes.io/security-group-rule": name,
+				},
 			}
 			AddDirectionalGroupRule(c, t)
 		}
@@ -283,12 +323,16 @@ func (b *FirewallModelBuilder) buildMasterRules(c *fi.ModelBuilderContext, nodeG
 		// Masters can talk to nodes
 		for _, dest := range nodeGroups {
 			suffix := JoinSuffixes(src, dest)
+			name := "all-master-to-node" + suffix
 
 			t := &awstasks.SecurityGroupRule{
-				Name:          fi.String("all-master-to-node" + suffix),
+				Name:          fi.String(name),
 				Lifecycle:     b.Lifecycle,
 				SecurityGroup: dest.Task,
 				SourceGroup:   src.Task,
+				Tags: map[string]string{
+					"kops.kubernetes.io/security-group-rule": name,
+				},
 			}
 			AddDirectionalGroupRule(c, t)
 		}

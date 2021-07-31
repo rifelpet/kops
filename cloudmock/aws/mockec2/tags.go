@@ -57,6 +57,8 @@ func (m *MockEC2) addTags(resourceId string, tags ...*ec2.Tag) {
 		resourceType = ec2.ResourceTypeVpc
 	} else if strings.HasPrefix(resourceId, "sg-") {
 		resourceType = ec2.ResourceTypeSecurityGroup
+	} else if strings.HasPrefix(resourceId, "sgr-") {
+		resourceType = ec2.ResourceTypeSecurityGroupRule
 	} else if strings.HasPrefix(resourceId, "vol-") {
 		resourceType = ec2.ResourceTypeVolume
 	} else if strings.HasPrefix(resourceId, "igw-") {
