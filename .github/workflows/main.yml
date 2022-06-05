@@ -29,28 +29,3 @@ jobs:
         working-directory: ${{ env.GOPATH }}/src/k8s.io/kops
         run: |
           make quick-ci
-  update-dependabot:
-    runs-on: ubuntu-20.04
-    on:
-      pull_request:
-        branches:
-          - dependabot/*
-    steps:
-      - name: Set up go
-        uses: actions/setup-go@b22fbbc2921299758641fab08929b4ac52b32923
-        with:
-          go-version: 1.18.1
-      - name: Update go modules
-        run: |
-          make gomod
-      - name: Commit files
-        run: |
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git commit -m "Update go modules" -a
-      - name: push
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
-        run: |
-          git push --set-upstream origin "HEAD:$GITHUB_HEAD_REF" --atomic
