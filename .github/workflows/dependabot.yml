@@ -36,5 +36,6 @@ jobs:
           git diff --exit-code && exit 0
           git config --local user.email actions@github.com
           git config --local user.name "GitHub Actions Dependabot Update"
-          git commit -m "Update go modules" -a
-          git push origin "HEAD:$GITHUB_HEAD_REF"
+          git add .
+          git commit -m "Update go modules"
+          git push
