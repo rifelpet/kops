@@ -34,8 +34,8 @@ jobs:
         working-directory: ${{ env.GOPATH }}/src/k8s.io/kops
         run: |
           git diff --exit-code && exit 0
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
+          git config --local user.email actions@github.com
+          git config --local user.name "GitHub Actions Dependabot Update"
           git commit -m "Update go modules" -a
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
           git push --set-upstream origin "HEAD:$GITHUB_HEAD_REF" --atomic
