@@ -205,6 +205,7 @@ func New(client *http.Client) (*Service, error) {
 	s.RegionOperations = NewRegionOperationsService(s)
 	s.RegionSecurityPolicies = NewRegionSecurityPoliciesService(s)
 	s.RegionSslCertificates = NewRegionSslCertificatesService(s)
+	s.RegionSslPolicies = NewRegionSslPoliciesService(s)
 	s.RegionTargetHttpProxies = NewRegionTargetHttpProxiesService(s)
 	s.RegionTargetHttpsProxies = NewRegionTargetHttpsProxiesService(s)
 	s.RegionTargetTcpProxies = NewRegionTargetTcpProxiesService(s)
@@ -362,6 +363,8 @@ type Service struct {
 	RegionSecurityPolicies *RegionSecurityPoliciesService
 
 	RegionSslCertificates *RegionSslCertificatesService
+
+	RegionSslPolicies *RegionSslPoliciesService
 
 	RegionTargetHttpProxies *RegionTargetHttpProxiesService
 
@@ -976,6 +979,15 @@ type RegionSslCertificatesService struct {
 	s *Service
 }
 
+func NewRegionSslPoliciesService(s *Service) *RegionSslPoliciesService {
+	rs := &RegionSslPoliciesService{s: s}
+	return rs
+}
+
+type RegionSslPoliciesService struct {
+	s *Service
+}
+
 func NewRegionTargetHttpProxiesService(s *Service) *RegionTargetHttpProxiesService {
 	rs := &RegionTargetHttpProxiesService{s: s}
 	return rs
@@ -1426,6 +1438,9 @@ type AcceleratorTypeAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -1610,6 +1625,9 @@ type AcceleratorTypeListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -1773,6 +1791,9 @@ type AcceleratorTypesScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -2096,6 +2117,8 @@ type Address struct {
 	//   "PRIVATE_SERVICE_CONNECT" - A private network IP address that can
 	// be used to configure Private Service Connect. This purpose can be
 	// specified only for GLOBAL addresses of Type INTERNAL
+	//   "SERVERLESS" - A regional internal IP address range reserved for
+	// Serverless.
 	//   "SHARED_LOADBALANCER_VIP" - A private network IP address that can
 	// be shared by multiple Internal Load Balancer forwarding rules.
 	//   "VPC_PEERING" - IP range for peer networks.
@@ -2247,6 +2270,9 @@ type AddressAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -2430,6 +2456,9 @@ type AddressListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -2591,6 +2620,9 @@ type AddressesScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -3562,6 +3594,9 @@ type AutoscalerAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -3745,6 +3780,9 @@ type AutoscalerListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -4022,6 +4060,9 @@ type AutoscalersScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -5152,6 +5193,9 @@ type BackendBucketListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -5733,6 +5777,9 @@ type BackendServiceAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -6397,6 +6444,9 @@ type BackendServiceListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -6773,6 +6823,9 @@ type BackendServicesScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -7572,6 +7625,7 @@ type Commitment struct {
 	//   "GENERAL_PURPOSE_N2D"
 	//   "GENERAL_PURPOSE_T2D"
 	//   "MEMORY_OPTIMIZED"
+	//   "MEMORY_OPTIMIZED_M3"
 	//   "TYPE_UNSPECIFIED"
 	Type string `json:"type,omitempty"`
 
@@ -7689,6 +7743,9 @@ type CommitmentAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -7872,6 +7929,9 @@ type CommitmentListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -8034,6 +8094,9 @@ type CommitmentsScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -8993,6 +9056,9 @@ type DiskAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -9256,6 +9322,9 @@ type DiskListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -9564,6 +9633,9 @@ type DiskTypeAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -9747,6 +9819,9 @@ type DiskTypeListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -9909,6 +9984,9 @@ type DiskTypesScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -10155,6 +10233,9 @@ type DisksScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -10533,6 +10614,9 @@ type ExchangedPeeringRoutesListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -10936,6 +11020,9 @@ type ExternalVpnGatewayListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -11406,6 +11493,9 @@ type FirewallListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -11819,6 +11909,9 @@ type FirewallPolicyListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -12023,6 +12116,11 @@ func (s *FirewallPolicyRule) MarshalJSON() ([]byte, error) {
 // FirewallPolicyRuleMatcher: Represents a match condition that incoming
 // traffic is evaluated against. Exactly one field must be specified.
 type FirewallPolicyRuleMatcher struct {
+	// DestAddressGroups: Address groups which should be matched against the
+	// traffic destination. Maximum number of destination address groups is
+	// 10.
+	DestAddressGroups []string `json:"destAddressGroups,omitempty"`
+
 	// DestIpRanges: CIDR IP address range. Maximum number of destination
 	// CIDR IP ranges allowed is 5000.
 	DestIpRanges []string `json:"destIpRanges,omitempty"`
@@ -12040,6 +12138,10 @@ type FirewallPolicyRuleMatcher struct {
 	// Layer4Configs: Pairs of IP protocols and ports that the rule should
 	// match.
 	Layer4Configs []*FirewallPolicyRuleMatcherLayer4Config `json:"layer4Configs,omitempty"`
+
+	// SrcAddressGroups: Address groups which should be matched against the
+	// traffic source. Maximum number of source address groups is 10.
+	SrcAddressGroups []string `json:"srcAddressGroups,omitempty"`
 
 	// SrcIpRanges: CIDR IP address range. Maximum number of source CIDR IP
 	// ranges allowed is 5000.
@@ -12061,20 +12163,21 @@ type FirewallPolicyRuleMatcher struct {
 	// The IPs in these lists will be matched against traffic source.
 	SrcThreatIntelligences []string `json:"srcThreatIntelligences,omitempty"`
 
-	// ForceSendFields is a list of field names (e.g. "DestIpRanges") to
-	// unconditionally include in API requests. By default, fields with
+	// ForceSendFields is a list of field names (e.g. "DestAddressGroups")
+	// to unconditionally include in API requests. By default, fields with
 	// empty or default values are omitted from API requests. However, any
 	// non-pointer, non-interface field appearing in ForceSendFields will be
 	// sent to the server regardless of whether the field is empty or not.
 	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
-	// NullFields is a list of field names (e.g. "DestIpRanges") to include
-	// in API requests with the JSON null value. By default, fields with
-	// empty values are omitted from API requests. However, any field with
-	// an empty value appearing in NullFields will be sent to the server as
-	// null. It is an error if a field in this list has a non-empty value.
-	// This may be used to include null fields in Patch requests.
+	// NullFields is a list of field names (e.g. "DestAddressGroups") to
+	// include in API requests with the JSON null value. By default, fields
+	// with empty values are omitted from API requests. However, any field
+	// with an empty value appearing in NullFields will be sent to the
+	// server as null. It is an error if a field in this list has a
+	// non-empty value. This may be used to include null fields in Patch
+	// requests.
 	NullFields []string `json:"-"`
 }
 
@@ -12212,24 +12315,31 @@ func (s *FixedOrPercent) MarshalJSON() ([]byte, error) {
 // Classic gateways (targetVpnGateway). For more information, read
 // Forwarding rule concepts and Using protocol forwarding.
 type ForwardingRule struct {
-	// IPAddress: IP address that this forwarding rule serves. When a client
-	// sends traffic to this IP address, the forwarding rule directs the
-	// traffic to the target that you specify in the forwarding rule. If you
-	// don't specify a reserved IP address, an ephemeral IP address is
-	// assigned. Methods for specifying an IP address: * IPv4 dotted
-	// decimal, as in `100.1.2.3` * Full URL, as in
+	// IPAddress: IP address for which this forwarding rule accepts traffic.
+	// When a client sends traffic to this IP address, the forwarding rule
+	// directs the traffic to the referenced target or backendService. While
+	// creating a forwarding rule, specifying an IPAddress is required under
+	// the following circumstances: - When the target is set to
+	// targetGrpcProxy and validateForProxyless is set to true, the
+	// IPAddress should be set to 0.0.0.0. - When the target is a Private
+	// Service Connect Google APIs bundle, you must specify an IPAddress.
+	// Otherwise, you can optionally specify an IP address that references
+	// an existing static (reserved) IP address resource. When omitted,
+	// Google Cloud assigns an ephemeral IP address. Use one of the
+	// following formats to specify an IP address while creating a
+	// forwarding rule: * IP address number, as in `100.1.2.3` * Full
+	// resource URL, as in
 	// https://www.googleapis.com/compute/v1/projects/project_id/regions/region
 	// /addresses/address-name * Partial URL or by name, as in: -
 	// projects/project_id/regions/region/addresses/address-name -
 	// regions/region/addresses/address-name - global/addresses/address-name
-	// - address-name The loadBalancingScheme and the forwarding rule's
-	// target determine the type of IP address that you can use. For
-	// detailed information, see IP address specifications
+	// - address-name The forwarding rule's target or backendService, and in
+	// most cases, also the loadBalancingScheme, determine the type of IP
+	// address that you can use. For detailed information, see IP address
+	// specifications
 	// (https://cloud.google.com/load-balancing/docs/forwarding-rule-concepts#ip_address_specifications).
-	// Must be set to `0.0.0.0` when the target is targetGrpcProxy that has
-	// validateForProxyless field set to true. For Private Service Connect
-	// forwarding rules that forward traffic to Google APIs, IP address must
-	// be provided.
+	// When reading an IPAddress, the API always returns the IP address
+	// number.
 	IPAddress string `json:"IPAddress,omitempty"`
 
 	// IPProtocol: The IP protocol to which this rule applies. For protocol
@@ -12397,6 +12507,11 @@ type ForwardingRule struct {
 	// for FIXED_STANDARD when fixed standard tier is expired or not
 	// configured.
 	NetworkTier string `json:"networkTier,omitempty"`
+
+	// NoAutomateDnsZone: This is used in PSC consumer ForwardingRule to
+	// control whether it should try to auto-generate a DNS zone or not.
+	// Non-PSC forwarding rules do not use this field.
+	NoAutomateDnsZone bool `json:"noAutomateDnsZone,omitempty"`
 
 	// PortRange: This field can be used only if: - Load balancing scheme is
 	// one of EXTERNAL, INTERNAL_SELF_MANAGED or INTERNAL_MANAGED -
@@ -12598,6 +12713,9 @@ type ForwardingRuleAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -12781,6 +12899,9 @@ type ForwardingRuleListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -13013,6 +13134,9 @@ type ForwardingRulesScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -13935,6 +14059,9 @@ type HealthCheckListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -14347,6 +14474,9 @@ type HealthCheckServicesListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -14532,6 +14662,9 @@ type HealthChecksAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -14693,6 +14826,9 @@ type HealthChecksScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -14929,10 +15065,10 @@ type HostRule struct {
 	// Hosts: The list of host patterns to match. They must be valid
 	// hostnames with optional port numbers in the format host:port. *
 	// matches any string of ([a-z0-9-.]*). In that case, * must be the
-	// first character and must be followed in the pattern by either - or ..
-	// * based matching is not supported when the URL map is bound to a
-	// target gRPC proxy that has the validateForProxyless field set to
-	// true.
+	// first character, and if followed by anything, the immediate following
+	// character must be either - or .. * based matching is not supported
+	// when the URL map is bound to a target gRPC proxy that has the
+	// validateForProxyless field set to true.
 	Hosts []string `json:"hosts,omitempty"`
 
 	// PathMatcher: The name of the PathMatcher to use to match the path
@@ -15494,6 +15630,9 @@ type HttpHealthCheckListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -15801,6 +15940,10 @@ type HttpRouteAction struct {
 	// retry_policy is ignored by clients that are configured with a
 	// fault_injection_policy if: 1. The traffic is generated by fault
 	// injection AND 2. The fault injection is not a delay fault injection.
+	// Fault injection is not supported with the global external HTTP(S)
+	// load balancer (classic). To see which load balancers support fault
+	// injection, see Load balancing: Routing and traffic management
+	// features.
 	FaultInjectionPolicy *HttpFaultInjection `json:"faultInjectionPolicy,omitempty"`
 
 	// MaxStreamDuration: Specifies the maximum duration (timeout) for
@@ -16253,6 +16396,9 @@ type HttpsHealthCheckListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -16537,7 +16683,7 @@ type Image struct {
 	SourceSnapshotId string `json:"sourceSnapshotId,omitempty"`
 
 	// SourceType: The type of the image used to create this disk. The
-	// default and only value is RAW
+	// default and only valid value is RAW.
 	//
 	// Possible values:
 	//   "RAW" (default)
@@ -16757,6 +16903,9 @@ type ImageListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -17281,6 +17430,9 @@ type InstanceAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -17638,6 +17790,9 @@ type InstanceGroupAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -17822,6 +17977,9 @@ type InstanceGroupListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -18265,6 +18423,9 @@ type InstanceGroupManagerAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -18520,6 +18681,9 @@ type InstanceGroupManagerListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -18853,13 +19017,17 @@ type InstanceGroupManagerUpdatePolicy struct {
 	// 3600].
 	MinReadySec int64 `json:"minReadySec,omitempty"`
 
-	// MinimalAction: Minimal action to be taken on an instance. You can
-	// specify either RESTART to restart existing instances or REPLACE to
-	// delete and create new instances from the target template. If you
-	// specify a RESTART, the Updater will attempt to perform that action
-	// only. However, if the Updater determines that the minimal action you
-	// specify is not enough to perform the update, it might perform a more
-	// disruptive action.
+	// MinimalAction: Minimal action to be taken on an instance. Use this
+	// option to minimize disruption as much as possible or to apply a more
+	// disruptive action than is necessary. - To limit disruption as much as
+	// possible, set the minimal action to REFRESH. If your update requires
+	// a more disruptive action, Compute Engine performs the necessary
+	// action to execute the update. - To apply a more disruptive action
+	// than is strictly necessary, set the minimal action to RESTART or
+	// REPLACE. For example, Compute Engine does not need to restart a VM to
+	// change its metadata. But if your application reads instance metadata
+	// only when a VM is restarted, you can set the minimal action to
+	// RESTART in order to pick up metadata changes.
 	//
 	// Possible values:
 	//   "NONE" - Do not perform any action.
@@ -19340,6 +19508,9 @@ type InstanceGroupManagersListPerInstanceConfigsRespWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -19614,6 +19785,9 @@ type InstanceGroupManagersScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -19955,6 +20129,9 @@ type InstanceGroupsListInstancesWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -20182,6 +20359,9 @@ type InstanceGroupsScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -20402,6 +20582,9 @@ type InstanceListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -20586,6 +20769,9 @@ type InstanceListReferrersWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -21293,6 +21479,9 @@ type InstanceTemplateListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -21719,6 +21908,9 @@ type InstancesScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -22693,6 +22885,9 @@ type InterconnectAttachmentAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -22879,6 +23074,9 @@ type InterconnectAttachmentListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -23120,6 +23318,9 @@ type InterconnectAttachmentsScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -23575,6 +23776,9 @@ type InterconnectListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -23880,6 +24084,9 @@ type InterconnectLocationListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -24488,6 +24695,9 @@ type LicensesListResponseWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -25128,6 +25338,9 @@ type MachineImageListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -25435,6 +25648,9 @@ type MachineTypeAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -25618,6 +25834,9 @@ type MachineTypeListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -25780,6 +25999,9 @@ type MachineTypesScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -26719,6 +26941,9 @@ type NetworkEdgeSecurityServiceAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -26883,6 +27108,9 @@ type NetworkEdgeSecurityServicesScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -27262,6 +27490,9 @@ type NetworkEndpointGroupAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -27631,6 +27862,9 @@ type NetworkEndpointGroupListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -27991,6 +28225,9 @@ type NetworkEndpointGroupsListNetworkEndpointsWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -28156,6 +28393,9 @@ type NetworkEndpointGroupsScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -28502,6 +28742,9 @@ type NetworkListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -28657,6 +28900,18 @@ type NetworkPeering struct {
 
 	// PeerMtu: Maximum Transmission Unit in bytes.
 	PeerMtu int64 `json:"peerMtu,omitempty"`
+
+	// StackType: Which IP version(s) of traffic and routes are allowed to
+	// be imported or exported between peer networks. The default value is
+	// IPV4_ONLY.
+	//
+	// Possible values:
+	//   "IPV4_IPV6" - This Peering will allow IPv4 traffic and routes to be
+	// exchanged. Additionally if the matching peering is IPV4_IPV6, IPv6
+	// traffic and routes will be exchanged as well.
+	//   "IPV4_ONLY" - This Peering will only allow IPv4 traffic and routes
+	// to be exchanged, even if the matching peering is IPV4_IPV6.
+	StackType string `json:"stackType,omitempty"`
 
 	// State: [Output Only] State for the peering, either `ACTIVE` or
 	// `INACTIVE`. The peering is `ACTIVE` when there's a matching
@@ -29193,6 +29448,9 @@ type NodeGroupAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -29418,6 +29676,9 @@ type NodeGroupListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -29770,6 +30031,9 @@ type NodeGroupsListNodesWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -29932,6 +30196,9 @@ type NodeGroupsScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -30260,6 +30527,9 @@ type NodeTemplateAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -30443,6 +30713,9 @@ type NodeTemplateListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -30635,6 +30908,9 @@ type NodeTemplatesScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -30900,6 +31176,9 @@ type NodeTypeAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -31083,6 +31362,9 @@ type NodeTypeListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -31245,6 +31527,9 @@ type NodeTypesScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -31551,6 +31836,9 @@ type NotificationEndpointListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -31889,6 +32177,9 @@ type OperationWarnings struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -32075,6 +32366,9 @@ type OperationAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -32258,6 +32552,9 @@ type OperationListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -32420,6 +32717,9 @@ type OperationsScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -32900,6 +33200,9 @@ type PacketMirroringAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -33162,6 +33465,9 @@ type PacketMirroringListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -33460,6 +33766,9 @@ type PacketMirroringsScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -34542,6 +34851,9 @@ type PublicAdvertisedPrefixListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -34884,6 +35196,9 @@ type PublicDelegatedPrefixAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -35067,6 +35382,9 @@ type PublicDelegatedPrefixListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -35289,6 +35607,9 @@ type PublicDelegatedPrefixesScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -35418,6 +35739,7 @@ type Quota struct {
 	//   "COMMITTED_N2A_CPUS"
 	//   "COMMITTED_N2D_CPUS"
 	//   "COMMITTED_N2_CPUS"
+	//   "COMMITTED_NVIDIA_A100_80GB_GPUS"
 	//   "COMMITTED_NVIDIA_A100_GPUS"
 	//   "COMMITTED_NVIDIA_K80_GPUS"
 	//   "COMMITTED_NVIDIA_P100_GPUS"
@@ -35468,6 +35790,7 @@ type Quota struct {
 	//   "NETWORK_FIREWALL_POLICIES"
 	//   "NODE_GROUPS"
 	//   "NODE_TEMPLATES"
+	//   "NVIDIA_A100_80GB_GPUS"
 	//   "NVIDIA_A100_GPUS"
 	//   "NVIDIA_K80_GPUS"
 	//   "NVIDIA_P100_GPUS"
@@ -35481,6 +35804,7 @@ type Quota struct {
 	//   "PD_EXTREME_TOTAL_PROVISIONED_IOPS"
 	//   "PREEMPTIBLE_CPUS"
 	//   "PREEMPTIBLE_LOCAL_SSD_GB"
+	//   "PREEMPTIBLE_NVIDIA_A100_80GB_GPUS"
 	//   "PREEMPTIBLE_NVIDIA_A100_GPUS"
 	//   "PREEMPTIBLE_NVIDIA_K80_GPUS"
 	//   "PREEMPTIBLE_NVIDIA_P100_GPUS"
@@ -35772,6 +36096,9 @@ type RegionAutoscalerListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -35983,6 +36310,9 @@ type RegionDiskTypeListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -36250,6 +36580,9 @@ type RegionInstanceGroupListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -36466,6 +36799,9 @@ type RegionInstanceGroupManagerListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -36907,6 +37243,9 @@ type RegionInstanceGroupManagersListInstanceConfigsRespWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -37297,6 +37636,9 @@ type RegionInstanceGroupsListInstancesWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -37554,6 +37896,9 @@ type RegionListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -38136,6 +38481,9 @@ type ReservationAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -38318,6 +38666,9 @@ type ReservationListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -38508,6 +38859,9 @@ type ReservationsScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -38746,6 +39100,9 @@ type ResourcePoliciesScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -39023,6 +39380,9 @@ type ResourcePolicyAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -39165,9 +39525,9 @@ func (s *ResourcePolicyDailyCycle) MarshalJSON() ([]byte, error) {
 // resource placement configuration. It specifies the failure bucket
 // separation as well as network locality
 type ResourcePolicyGroupPlacementPolicy struct {
-	// AvailabilityDomainCount: The number of availability domains instances
-	// will be spread across. If two instances are in different availability
-	// domain, they will not be put in the same low latency network
+	// AvailabilityDomainCount: The number of availability domains to spread
+	// instances across. If two instances are in different availability
+	// domain, they are not in the same low latency network.
 	AvailabilityDomainCount int64 `json:"availabilityDomainCount,omitempty"`
 
 	// Collocation: Specifies network collocation
@@ -39177,7 +39537,10 @@ type ResourcePolicyGroupPlacementPolicy struct {
 	//   "UNSPECIFIED_COLLOCATION"
 	Collocation string `json:"collocation,omitempty"`
 
-	// VmCount: Number of vms in this placement group
+	// VmCount: Number of VMs in this placement group. Google does not
+	// recommend that you use this field unless you use a compact policy and
+	// you want your policy to work only if it contains this exact number of
+	// VMs.
 	VmCount int64 `json:"vmCount,omitempty"`
 
 	// ForceSendFields is a list of field names (e.g.
@@ -39406,6 +39769,9 @@ type ResourcePolicyListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -40026,6 +40392,9 @@ type RouteWarnings struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -40251,6 +40620,9 @@ type RouteListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -40561,6 +40933,9 @@ type RouterAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -41108,6 +41483,9 @@ type RouterListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -41264,6 +41642,16 @@ type RouterNat struct {
 	EnableDynamicPortAllocation bool `json:"enableDynamicPortAllocation,omitempty"`
 
 	EnableEndpointIndependentMapping bool `json:"enableEndpointIndependentMapping,omitempty"`
+
+	// EndpointTypes: List of NAT-ted endpoint types supported by the Nat
+	// Gateway. If the list is empty, then it will be equivalent to include
+	// ENDPOINT_TYPE_VM
+	//
+	// Possible values:
+	//   "ENDPOINT_TYPE_SWG" - This is used for Secure Web Gateway
+	// endpoints.
+	//   "ENDPOINT_TYPE_VM" - This is the default.
+	EndpointTypes []string `json:"endpointTypes,omitempty"`
 
 	// IcmpIdleTimeoutSec: Timeout (in seconds) for ICMP connections.
 	// Defaults to 30s if not set.
@@ -41909,6 +42297,9 @@ type RoutersScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -42616,6 +43007,9 @@ type SecurityPoliciesAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -42810,6 +43204,9 @@ type SecurityPoliciesScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -43343,6 +43740,9 @@ type SecurityPolicyListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -44344,6 +44744,9 @@ type ServiceAttachmentAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -44603,6 +45006,9 @@ type ServiceAttachmentListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -44766,6 +45172,9 @@ type ServiceAttachmentsScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -45520,6 +45929,9 @@ type SnapshotListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -46003,6 +46415,9 @@ type SslCertificateAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -46186,6 +46601,9 @@ type SslCertificateListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -46443,6 +46861,9 @@ type SslCertificatesScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -46542,6 +46963,197 @@ func (s *SslCertificatesScopedListWarningData) MarshalJSON() ([]byte, error) {
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
+type SslPoliciesAggregatedList struct {
+	Etag string `json:"etag,omitempty"`
+
+	// Id: [Output Only] Unique identifier for the resource; defined by the
+	// server.
+	Id string `json:"id,omitempty"`
+
+	// Items: A list of SslPoliciesScopedList resources.
+	Items map[string]SslPoliciesScopedList `json:"items,omitempty"`
+
+	// Kind: [Output Only] Type of resource. Always
+	// compute#sslPolicyAggregatedList for lists of SSL Policies.
+	Kind string `json:"kind,omitempty"`
+
+	// NextPageToken: [Output Only] This token allows you to get the next
+	// page of results for list requests. If the number of results is larger
+	// than maxResults, use the nextPageToken as a value for the query
+	// parameter pageToken in the next list request. Subsequent list
+	// requests will have their own nextPageToken to continue paging through
+	// the results.
+	NextPageToken string `json:"nextPageToken,omitempty"`
+
+	// SelfLink: [Output Only] Server-defined URL for this resource.
+	SelfLink string `json:"selfLink,omitempty"`
+
+	// Unreachables: [Output Only] Unreachable resources.
+	Unreachables []string `json:"unreachables,omitempty"`
+
+	// Warning: [Output Only] Informational warning message.
+	Warning *SslPoliciesAggregatedListWarning `json:"warning,omitempty"`
+
+	// ServerResponse contains the HTTP response code and headers from the
+	// server.
+	googleapi.ServerResponse `json:"-"`
+
+	// ForceSendFields is a list of field names (e.g. "Etag") to
+	// unconditionally include in API requests. By default, fields with
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "Etag") to include in API
+	// requests with the JSON null value. By default, fields with empty
+	// values are omitted from API requests. However, any field with an
+	// empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *SslPoliciesAggregatedList) MarshalJSON() ([]byte, error) {
+	type NoMethod SslPoliciesAggregatedList
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+// SslPoliciesAggregatedListWarning: [Output Only] Informational warning
+// message.
+type SslPoliciesAggregatedListWarning struct {
+	// Code: [Output Only] A warning code, if applicable. For example,
+	// Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in
+	// the response.
+	//
+	// Possible values:
+	//   "CLEANUP_FAILED" - Warning about failed cleanup of transient
+	// changes made by a failed operation.
+	//   "DEPRECATED_RESOURCE_USED" - A link to a deprecated resource was
+	// created.
+	//   "DEPRECATED_TYPE_USED" - When deploying and at least one of the
+	// resources has a type marked as deprecated
+	//   "DISK_SIZE_LARGER_THAN_IMAGE_SIZE" - The user created a boot disk
+	// that is larger than image size.
+	//   "EXPERIMENTAL_TYPE_USED" - When deploying and at least one of the
+	// resources has a type marked as experimental
+	//   "EXTERNAL_API_WARNING" - Warning that is present in an external api
+	// call
+	//   "FIELD_VALUE_OVERRIDEN" - Warning that value of a field has been
+	// overridden. Deprecated unused field.
+	//   "INJECTED_KERNELS_DEPRECATED" - The operation involved use of an
+	// injected kernel, which is deprecated.
+	//   "LARGE_DEPLOYMENT_WARNING" - When deploying a deployment with a
+	// exceedingly large number of resources
+	//   "MISSING_TYPE_DEPENDENCY" - A resource depends on a missing type
+	//   "NEXT_HOP_ADDRESS_NOT_ASSIGNED" - The route's nextHopIp address is
+	// not assigned to an instance on the network.
+	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
+	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
+	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
+	// refers to an instance that does not exist.
+	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
+	// URL refers to an instance that is not on the same network as the
+	// route.
+	//   "NEXT_HOP_NOT_RUNNING" - The route's next hop instance does not
+	// have a status of RUNNING.
+	//   "NOT_CRITICAL_ERROR" - Error which is not critical. We decided to
+	// continue the process despite the mentioned error.
+	//   "NO_RESULTS_ON_PAGE" - No results are present on a particular list
+	// page.
+	//   "PARTIAL_SUCCESS" - Success is reported, but some results may be
+	// missing due to errors
+	//   "REQUIRED_TOS_AGREEMENT" - The user attempted to use a resource
+	// that requires a TOS they have not accepted.
+	//   "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING" - Warning that a
+	// resource is in use.
+	//   "RESOURCE_NOT_DELETED" - One or more of the resources set to
+	// auto-delete could not be deleted because they were in use.
+	//   "SCHEMA_VALIDATION_IGNORED" - When a resource schema validation is
+	// ignored.
+	//   "SINGLE_INSTANCE_PROPERTY_TEMPLATE" - Instance template used in
+	// instance group manager is valid as such, but its application does not
+	// make a lot of sense, because it allows only single instance in
+	// instance group.
+	//   "UNDECLARED_PROPERTIES" - When undeclared properties in the schema
+	// are present
+	//   "UNREACHABLE" - A given scope cannot be reached.
+	Code string `json:"code,omitempty"`
+
+	// Data: [Output Only] Metadata about this warning in key: value format.
+	// For example: "data": [ { "key": "scope", "value": "zones/us-east1-d"
+	// }
+	Data []*SslPoliciesAggregatedListWarningData `json:"data,omitempty"`
+
+	// Message: [Output Only] A human-readable description of the warning
+	// code.
+	Message string `json:"message,omitempty"`
+
+	// ForceSendFields is a list of field names (e.g. "Code") to
+	// unconditionally include in API requests. By default, fields with
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "Code") to include in API
+	// requests with the JSON null value. By default, fields with empty
+	// values are omitted from API requests. However, any field with an
+	// empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *SslPoliciesAggregatedListWarning) MarshalJSON() ([]byte, error) {
+	type NoMethod SslPoliciesAggregatedListWarning
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+type SslPoliciesAggregatedListWarningData struct {
+	// Key: [Output Only] A key that provides more detail on the warning
+	// being returned. For example, for warnings where there are no results
+	// in a list request for a particular zone, this key might be scope and
+	// the key value might be the zone name. Other examples might be a key
+	// indicating a deprecated resource and a suggested replacement, or a
+	// warning about invalid network settings (for example, if an instance
+	// attempts to perform IP forwarding but is not enabled for IP
+	// forwarding).
+	Key string `json:"key,omitempty"`
+
+	// Value: [Output Only] A warning data value corresponding to the key.
+	Value string `json:"value,omitempty"`
+
+	// ForceSendFields is a list of field names (e.g. "Key") to
+	// unconditionally include in API requests. By default, fields with
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "Key") to include in API
+	// requests with the JSON null value. By default, fields with empty
+	// values are omitted from API requests. However, any field with an
+	// empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *SslPoliciesAggregatedListWarningData) MarshalJSON() ([]byte, error) {
+	type NoMethod SslPoliciesAggregatedListWarningData
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
 type SslPoliciesList struct {
 	// Id: [Output Only] Unique identifier for the resource; defined by the
 	// server.
@@ -46625,6 +47237,9 @@ type SslPoliciesListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -46754,6 +47369,170 @@ func (s *SslPoliciesListAvailableFeaturesResponse) MarshalJSON() ([]byte, error)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
+type SslPoliciesScopedList struct {
+	// SslPolicies: A list of SslPolicies contained in this scope.
+	SslPolicies []*SslPolicy `json:"sslPolicies,omitempty"`
+
+	// Warning: Informational warning which replaces the list of SSL
+	// policies when the list is empty.
+	Warning *SslPoliciesScopedListWarning `json:"warning,omitempty"`
+
+	// ForceSendFields is a list of field names (e.g. "SslPolicies") to
+	// unconditionally include in API requests. By default, fields with
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "SslPolicies") to include
+	// in API requests with the JSON null value. By default, fields with
+	// empty values are omitted from API requests. However, any field with
+	// an empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *SslPoliciesScopedList) MarshalJSON() ([]byte, error) {
+	type NoMethod SslPoliciesScopedList
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+// SslPoliciesScopedListWarning: Informational warning which replaces
+// the list of SSL policies when the list is empty.
+type SslPoliciesScopedListWarning struct {
+	// Code: [Output Only] A warning code, if applicable. For example,
+	// Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in
+	// the response.
+	//
+	// Possible values:
+	//   "CLEANUP_FAILED" - Warning about failed cleanup of transient
+	// changes made by a failed operation.
+	//   "DEPRECATED_RESOURCE_USED" - A link to a deprecated resource was
+	// created.
+	//   "DEPRECATED_TYPE_USED" - When deploying and at least one of the
+	// resources has a type marked as deprecated
+	//   "DISK_SIZE_LARGER_THAN_IMAGE_SIZE" - The user created a boot disk
+	// that is larger than image size.
+	//   "EXPERIMENTAL_TYPE_USED" - When deploying and at least one of the
+	// resources has a type marked as experimental
+	//   "EXTERNAL_API_WARNING" - Warning that is present in an external api
+	// call
+	//   "FIELD_VALUE_OVERRIDEN" - Warning that value of a field has been
+	// overridden. Deprecated unused field.
+	//   "INJECTED_KERNELS_DEPRECATED" - The operation involved use of an
+	// injected kernel, which is deprecated.
+	//   "LARGE_DEPLOYMENT_WARNING" - When deploying a deployment with a
+	// exceedingly large number of resources
+	//   "MISSING_TYPE_DEPENDENCY" - A resource depends on a missing type
+	//   "NEXT_HOP_ADDRESS_NOT_ASSIGNED" - The route's nextHopIp address is
+	// not assigned to an instance on the network.
+	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
+	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
+	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
+	// refers to an instance that does not exist.
+	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
+	// URL refers to an instance that is not on the same network as the
+	// route.
+	//   "NEXT_HOP_NOT_RUNNING" - The route's next hop instance does not
+	// have a status of RUNNING.
+	//   "NOT_CRITICAL_ERROR" - Error which is not critical. We decided to
+	// continue the process despite the mentioned error.
+	//   "NO_RESULTS_ON_PAGE" - No results are present on a particular list
+	// page.
+	//   "PARTIAL_SUCCESS" - Success is reported, but some results may be
+	// missing due to errors
+	//   "REQUIRED_TOS_AGREEMENT" - The user attempted to use a resource
+	// that requires a TOS they have not accepted.
+	//   "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING" - Warning that a
+	// resource is in use.
+	//   "RESOURCE_NOT_DELETED" - One or more of the resources set to
+	// auto-delete could not be deleted because they were in use.
+	//   "SCHEMA_VALIDATION_IGNORED" - When a resource schema validation is
+	// ignored.
+	//   "SINGLE_INSTANCE_PROPERTY_TEMPLATE" - Instance template used in
+	// instance group manager is valid as such, but its application does not
+	// make a lot of sense, because it allows only single instance in
+	// instance group.
+	//   "UNDECLARED_PROPERTIES" - When undeclared properties in the schema
+	// are present
+	//   "UNREACHABLE" - A given scope cannot be reached.
+	Code string `json:"code,omitempty"`
+
+	// Data: [Output Only] Metadata about this warning in key: value format.
+	// For example: "data": [ { "key": "scope", "value": "zones/us-east1-d"
+	// }
+	Data []*SslPoliciesScopedListWarningData `json:"data,omitempty"`
+
+	// Message: [Output Only] A human-readable description of the warning
+	// code.
+	Message string `json:"message,omitempty"`
+
+	// ForceSendFields is a list of field names (e.g. "Code") to
+	// unconditionally include in API requests. By default, fields with
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "Code") to include in API
+	// requests with the JSON null value. By default, fields with empty
+	// values are omitted from API requests. However, any field with an
+	// empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *SslPoliciesScopedListWarning) MarshalJSON() ([]byte, error) {
+	type NoMethod SslPoliciesScopedListWarning
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+type SslPoliciesScopedListWarningData struct {
+	// Key: [Output Only] A key that provides more detail on the warning
+	// being returned. For example, for warnings where there are no results
+	// in a list request for a particular zone, this key might be scope and
+	// the key value might be the zone name. Other examples might be a key
+	// indicating a deprecated resource and a suggested replacement, or a
+	// warning about invalid network settings (for example, if an instance
+	// attempts to perform IP forwarding but is not enabled for IP
+	// forwarding).
+	Key string `json:"key,omitempty"`
+
+	// Value: [Output Only] A warning data value corresponding to the key.
+	Value string `json:"value,omitempty"`
+
+	// ForceSendFields is a list of field names (e.g. "Key") to
+	// unconditionally include in API requests. By default, fields with
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "Key") to include in API
+	// requests with the JSON null value. By default, fields with empty
+	// values are omitted from API requests. However, any field with an
+	// empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *SslPoliciesScopedListWarningData) MarshalJSON() ([]byte, error) {
+	type NoMethod SslPoliciesScopedListWarningData
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
 // SslPolicy: Represents an SSL Policy resource. Use SSL policies to
 // control the SSL features, such as versions and cipher suites, offered
 // by an HTTPS or SSL Proxy load balancer. For more information, read
@@ -46831,6 +47610,10 @@ type SslPolicy struct {
 	// features, intended to meet stricter compliance requirements.
 	Profile string `json:"profile,omitempty"`
 
+	// Region: [Output Only] URL of the region where the regional SSL policy
+	// resides. This field is not applicable to global SSL policies.
+	Region string `json:"region,omitempty"`
+
 	// SelfLink: [Output Only] Server-defined URL for the resource.
 	SelfLink string `json:"selfLink,omitempty"`
 
@@ -46896,6 +47679,9 @@ type SslPolicyWarnings struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -47479,6 +48265,9 @@ type SubnetworkAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -47662,6 +48451,9 @@ type SubnetworkListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -47984,6 +48776,9 @@ type SubnetworksScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -48455,6 +49250,9 @@ type TargetGrpcProxyListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -48618,6 +49416,9 @@ type TargetHttpProxiesScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -48916,6 +49717,9 @@ type TargetHttpProxyAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -49100,6 +49904,9 @@ type TargetHttpProxyListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -49263,6 +50070,9 @@ type TargetHttpsProxiesScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -49721,6 +50531,9 @@ type TargetHttpsProxyAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -49905,6 +50718,9 @@ type TargetHttpsProxyListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -50178,6 +50994,9 @@ type TargetInstanceAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -50361,6 +51180,9 @@ type TargetInstanceListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -50523,6 +51345,9 @@ type TargetInstancesScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -50866,6 +51691,9 @@ type TargetPoolAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -51084,6 +51912,9 @@ type TargetPoolListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -51364,6 +52195,9 @@ type TargetPoolsScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -51784,6 +52618,9 @@ type TargetSslProxyListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -52116,6 +52953,9 @@ type TargetTcpProxyListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -52406,6 +53246,9 @@ type TargetVpnGatewayAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -52590,6 +53433,9 @@ type TargetVpnGatewayListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -52753,6 +53599,9 @@ type TargetVpnGatewaysScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -53226,6 +54075,9 @@ type UrlMapListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -53573,6 +54425,9 @@ type UrlMapsAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -53734,6 +54589,9 @@ type UrlMapsScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -54116,6 +54974,9 @@ type UsableSubnetworksAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -54434,6 +55295,9 @@ type VmEndpointNatMappingsListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -54718,6 +55582,9 @@ type VpnGatewayAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -54901,6 +55768,9 @@ type VpnGatewayListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -55306,6 +56176,9 @@ type VpnGatewaysScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -55686,6 +56559,9 @@ type VpnTunnelAggregatedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -55869,6 +56745,9 @@ type VpnTunnelListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -56030,6 +56909,9 @@ type VpnTunnelsScopedListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -56336,6 +57218,9 @@ type XpnHostListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -56632,6 +57517,9 @@ type ZoneListWarning struct {
 	// not assigned to an instance on the network.
 	//   "NEXT_HOP_CANNOT_IP_FORWARD" - The route's next hop instance cannot
 	// ip forward.
+	//   "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE" - The route's
+	// nextHopInstance URL refers to an instance that does not have an ipv6
+	// interface on the same network as the route.
 	//   "NEXT_HOP_INSTANCE_NOT_FOUND" - The route's nextHopInstance URL
 	// refers to an instance that does not exist.
 	//   "NEXT_HOP_INSTANCE_NOT_ON_NETWORK" - The route's nextHopInstance
@@ -159387,6 +160275,1433 @@ func (c *RegionSslCertificatesTestIamPermissionsCall) Do(opts ...googleapi.CallO
 
 }
 
+// method id "compute.regionSslPolicies.delete":
+
+type RegionSslPoliciesDeleteCall struct {
+	s          *Service
+	project    string
+	region     string
+	sslPolicy  string
+	urlParams_ gensupport.URLParams
+	ctx_       context.Context
+	header_    http.Header
+}
+
+// Delete: Deletes the specified SSL policy. The SSL policy resource can
+// be deleted only if it is not in use by any TargetHttpsProxy or
+// TargetSslProxy resources.
+//
+// - project: Project ID for this request.
+// - region: Name of the region scoping this request.
+// - sslPolicy: Name of the SSL policy to delete. The name must be 1-63
+//   characters long, and comply with RFC1035.
+func (r *RegionSslPoliciesService) Delete(project string, region string, sslPolicy string) *RegionSslPoliciesDeleteCall {
+	c := &RegionSslPoliciesDeleteCall{s: r.s, urlParams_: make(gensupport.URLParams)}
+	c.project = project
+	c.region = region
+	c.sslPolicy = sslPolicy
+	return c
+}
+
+// RequestId sets the optional parameter "requestId": An optional
+// request ID to identify requests. Specify a unique request ID so that
+// if you must retry your request, the server will know to ignore the
+// request if it has already been completed. For example, consider a
+// situation where you make an initial request and the request times
+// out. If you make the request again with the same request ID, the
+// server can check if original operation with the same request ID was
+// received, and if so, will ignore the second request. This prevents
+// clients from accidentally creating duplicate commitments. The request
+// ID must be a valid UUID with the exception that zero UUID is not
+// supported ( 00000000-0000-0000-0000-000000000000).
+func (c *RegionSslPoliciesDeleteCall) RequestId(requestId string) *RegionSslPoliciesDeleteCall {
+	c.urlParams_.Set("requestId", requestId)
+	return c
+}
+
+// Fields allows partial responses to be retrieved. See
+// https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
+// for more information.
+func (c *RegionSslPoliciesDeleteCall) Fields(s ...googleapi.Field) *RegionSslPoliciesDeleteCall {
+	c.urlParams_.Set("fields", googleapi.CombineFields(s))
+	return c
+}
+
+// Context sets the context to be used in this call's Do method. Any
+// pending HTTP request will be aborted if the provided context is
+// canceled.
+func (c *RegionSslPoliciesDeleteCall) Context(ctx context.Context) *RegionSslPoliciesDeleteCall {
+	c.ctx_ = ctx
+	return c
+}
+
+// Header returns an http.Header that can be modified by the caller to
+// add HTTP headers to the request.
+func (c *RegionSslPoliciesDeleteCall) Header() http.Header {
+	if c.header_ == nil {
+		c.header_ = make(http.Header)
+	}
+	return c.header_
+}
+
+func (c *RegionSslPoliciesDeleteCall) doRequest(alt string) (*http.Response, error) {
+	reqHeaders := make(http.Header)
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
+	for k, v := range c.header_ {
+		reqHeaders[k] = v
+	}
+	reqHeaders.Set("User-Agent", c.s.userAgent())
+	var body io.Reader = nil
+	c.urlParams_.Set("alt", alt)
+	c.urlParams_.Set("prettyPrint", "false")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "projects/{project}/regions/{region}/sslPolicies/{sslPolicy}")
+	urls += "?" + c.urlParams_.Encode()
+	req, err := http.NewRequest("DELETE", urls, body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header = reqHeaders
+	googleapi.Expand(req.URL, map[string]string{
+		"project":   c.project,
+		"region":    c.region,
+		"sslPolicy": c.sslPolicy,
+	})
+	return gensupport.SendRequest(c.ctx_, c.s.client, req)
+}
+
+// Do executes the "compute.regionSslPolicies.delete" call.
+// Exactly one of *Operation or error will be non-nil. Any non-2xx
+// status code is an error. Response headers are in either
+// *Operation.ServerResponse.Header or (if a response was returned at
+// all) in error.(*googleapi.Error).Header. Use googleapi.IsNotModified
+// to check whether the returned error was because
+// http.StatusNotModified was returned.
+func (c *RegionSslPoliciesDeleteCall) Do(opts ...googleapi.CallOption) (*Operation, error) {
+	gensupport.SetOptions(c.urlParams_, opts...)
+	res, err := c.doRequest("json")
+	if res != nil && res.StatusCode == http.StatusNotModified {
+		if res.Body != nil {
+			res.Body.Close()
+		}
+		return nil, &googleapi.Error{
+			Code:   res.StatusCode,
+			Header: res.Header,
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	defer googleapi.CloseBody(res)
+	if err := googleapi.CheckResponse(res); err != nil {
+		return nil, err
+	}
+	ret := &Operation{
+		ServerResponse: googleapi.ServerResponse{
+			Header:         res.Header,
+			HTTPStatusCode: res.StatusCode,
+		},
+	}
+	target := &ret
+	if err := gensupport.DecodeResponse(target, res); err != nil {
+		return nil, err
+	}
+	return ret, nil
+	// {
+	//   "description": "Deletes the specified SSL policy. The SSL policy resource can be deleted only if it is not in use by any TargetHttpsProxy or TargetSslProxy resources.",
+	//   "flatPath": "projects/{project}/regions/{region}/sslPolicies/{sslPolicy}",
+	//   "httpMethod": "DELETE",
+	//   "id": "compute.regionSslPolicies.delete",
+	//   "parameterOrder": [
+	//     "project",
+	//     "region",
+	//     "sslPolicy"
+	//   ],
+	//   "parameters": {
+	//     "project": {
+	//       "description": "Project ID for this request.",
+	//       "location": "path",
+	//       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "region": {
+	//       "description": "Name of the region scoping this request.",
+	//       "location": "path",
+	//       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "requestId": {
+	//       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported ( 00000000-0000-0000-0000-000000000000).",
+	//       "location": "query",
+	//       "type": "string"
+	//     },
+	//     "sslPolicy": {
+	//       "description": "Name of the SSL policy to delete. The name must be 1-63 characters long, and comply with RFC1035.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     }
+	//   },
+	//   "path": "projects/{project}/regions/{region}/sslPolicies/{sslPolicy}",
+	//   "response": {
+	//     "$ref": "Operation"
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/cloud-platform",
+	//     "https://www.googleapis.com/auth/compute"
+	//   ]
+	// }
+
+}
+
+// method id "compute.regionSslPolicies.get":
+
+type RegionSslPoliciesGetCall struct {
+	s            *Service
+	project      string
+	region       string
+	sslPolicy    string
+	urlParams_   gensupport.URLParams
+	ifNoneMatch_ string
+	ctx_         context.Context
+	header_      http.Header
+}
+
+// Get: Lists all of the ordered rules present in a single specified
+// policy.
+//
+// - project: Project ID for this request.
+// - region: Name of the region scoping this request.
+// - sslPolicy: Name of the SSL policy to update. The name must be 1-63
+//   characters long, and comply with RFC1035.
+func (r *RegionSslPoliciesService) Get(project string, region string, sslPolicy string) *RegionSslPoliciesGetCall {
+	c := &RegionSslPoliciesGetCall{s: r.s, urlParams_: make(gensupport.URLParams)}
+	c.project = project
+	c.region = region
+	c.sslPolicy = sslPolicy
+	return c
+}
+
+// Fields allows partial responses to be retrieved. See
+// https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
+// for more information.
+func (c *RegionSslPoliciesGetCall) Fields(s ...googleapi.Field) *RegionSslPoliciesGetCall {
+	c.urlParams_.Set("fields", googleapi.CombineFields(s))
+	return c
+}
+
+// IfNoneMatch sets the optional parameter which makes the operation
+// fail if the object's ETag matches the given value. This is useful for
+// getting updates only after the object has changed since the last
+// request. Use googleapi.IsNotModified to check whether the response
+// error from Do is the result of In-None-Match.
+func (c *RegionSslPoliciesGetCall) IfNoneMatch(entityTag string) *RegionSslPoliciesGetCall {
+	c.ifNoneMatch_ = entityTag
+	return c
+}
+
+// Context sets the context to be used in this call's Do method. Any
+// pending HTTP request will be aborted if the provided context is
+// canceled.
+func (c *RegionSslPoliciesGetCall) Context(ctx context.Context) *RegionSslPoliciesGetCall {
+	c.ctx_ = ctx
+	return c
+}
+
+// Header returns an http.Header that can be modified by the caller to
+// add HTTP headers to the request.
+func (c *RegionSslPoliciesGetCall) Header() http.Header {
+	if c.header_ == nil {
+		c.header_ = make(http.Header)
+	}
+	return c.header_
+}
+
+func (c *RegionSslPoliciesGetCall) doRequest(alt string) (*http.Response, error) {
+	reqHeaders := make(http.Header)
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
+	for k, v := range c.header_ {
+		reqHeaders[k] = v
+	}
+	reqHeaders.Set("User-Agent", c.s.userAgent())
+	if c.ifNoneMatch_ != "" {
+		reqHeaders.Set("If-None-Match", c.ifNoneMatch_)
+	}
+	var body io.Reader = nil
+	c.urlParams_.Set("alt", alt)
+	c.urlParams_.Set("prettyPrint", "false")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "projects/{project}/regions/{region}/sslPolicies/{sslPolicy}")
+	urls += "?" + c.urlParams_.Encode()
+	req, err := http.NewRequest("GET", urls, body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header = reqHeaders
+	googleapi.Expand(req.URL, map[string]string{
+		"project":   c.project,
+		"region":    c.region,
+		"sslPolicy": c.sslPolicy,
+	})
+	return gensupport.SendRequest(c.ctx_, c.s.client, req)
+}
+
+// Do executes the "compute.regionSslPolicies.get" call.
+// Exactly one of *SslPolicy or error will be non-nil. Any non-2xx
+// status code is an error. Response headers are in either
+// *SslPolicy.ServerResponse.Header or (if a response was returned at
+// all) in error.(*googleapi.Error).Header. Use googleapi.IsNotModified
+// to check whether the returned error was because
+// http.StatusNotModified was returned.
+func (c *RegionSslPoliciesGetCall) Do(opts ...googleapi.CallOption) (*SslPolicy, error) {
+	gensupport.SetOptions(c.urlParams_, opts...)
+	res, err := c.doRequest("json")
+	if res != nil && res.StatusCode == http.StatusNotModified {
+		if res.Body != nil {
+			res.Body.Close()
+		}
+		return nil, &googleapi.Error{
+			Code:   res.StatusCode,
+			Header: res.Header,
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	defer googleapi.CloseBody(res)
+	if err := googleapi.CheckResponse(res); err != nil {
+		return nil, err
+	}
+	ret := &SslPolicy{
+		ServerResponse: googleapi.ServerResponse{
+			Header:         res.Header,
+			HTTPStatusCode: res.StatusCode,
+		},
+	}
+	target := &ret
+	if err := gensupport.DecodeResponse(target, res); err != nil {
+		return nil, err
+	}
+	return ret, nil
+	// {
+	//   "description": "Lists all of the ordered rules present in a single specified policy.",
+	//   "flatPath": "projects/{project}/regions/{region}/sslPolicies/{sslPolicy}",
+	//   "httpMethod": "GET",
+	//   "id": "compute.regionSslPolicies.get",
+	//   "parameterOrder": [
+	//     "project",
+	//     "region",
+	//     "sslPolicy"
+	//   ],
+	//   "parameters": {
+	//     "project": {
+	//       "description": "Project ID for this request.",
+	//       "location": "path",
+	//       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "region": {
+	//       "description": "Name of the region scoping this request.",
+	//       "location": "path",
+	//       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "sslPolicy": {
+	//       "description": "Name of the SSL policy to update. The name must be 1-63 characters long, and comply with RFC1035.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     }
+	//   },
+	//   "path": "projects/{project}/regions/{region}/sslPolicies/{sslPolicy}",
+	//   "response": {
+	//     "$ref": "SslPolicy"
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/cloud-platform",
+	//     "https://www.googleapis.com/auth/compute",
+	//     "https://www.googleapis.com/auth/compute.readonly"
+	//   ]
+	// }
+
+}
+
+// method id "compute.regionSslPolicies.insert":
+
+type RegionSslPoliciesInsertCall struct {
+	s          *Service
+	project    string
+	region     string
+	sslpolicy  *SslPolicy
+	urlParams_ gensupport.URLParams
+	ctx_       context.Context
+	header_    http.Header
+}
+
+// Insert: Creates a new policy in the specified project and region
+// using the data included in the request.
+//
+// - project: Project ID for this request.
+// - region: Name of the region scoping this request.
+func (r *RegionSslPoliciesService) Insert(project string, region string, sslpolicy *SslPolicy) *RegionSslPoliciesInsertCall {
+	c := &RegionSslPoliciesInsertCall{s: r.s, urlParams_: make(gensupport.URLParams)}
+	c.project = project
+	c.region = region
+	c.sslpolicy = sslpolicy
+	return c
+}
+
+// RequestId sets the optional parameter "requestId": An optional
+// request ID to identify requests. Specify a unique request ID so that
+// if you must retry your request, the server will know to ignore the
+// request if it has already been completed. For example, consider a
+// situation where you make an initial request and the request times
+// out. If you make the request again with the same request ID, the
+// server can check if original operation with the same request ID was
+// received, and if so, will ignore the second request. This prevents
+// clients from accidentally creating duplicate commitments. The request
+// ID must be a valid UUID with the exception that zero UUID is not
+// supported ( 00000000-0000-0000-0000-000000000000).
+func (c *RegionSslPoliciesInsertCall) RequestId(requestId string) *RegionSslPoliciesInsertCall {
+	c.urlParams_.Set("requestId", requestId)
+	return c
+}
+
+// Fields allows partial responses to be retrieved. See
+// https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
+// for more information.
+func (c *RegionSslPoliciesInsertCall) Fields(s ...googleapi.Field) *RegionSslPoliciesInsertCall {
+	c.urlParams_.Set("fields", googleapi.CombineFields(s))
+	return c
+}
+
+// Context sets the context to be used in this call's Do method. Any
+// pending HTTP request will be aborted if the provided context is
+// canceled.
+func (c *RegionSslPoliciesInsertCall) Context(ctx context.Context) *RegionSslPoliciesInsertCall {
+	c.ctx_ = ctx
+	return c
+}
+
+// Header returns an http.Header that can be modified by the caller to
+// add HTTP headers to the request.
+func (c *RegionSslPoliciesInsertCall) Header() http.Header {
+	if c.header_ == nil {
+		c.header_ = make(http.Header)
+	}
+	return c.header_
+}
+
+func (c *RegionSslPoliciesInsertCall) doRequest(alt string) (*http.Response, error) {
+	reqHeaders := make(http.Header)
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
+	for k, v := range c.header_ {
+		reqHeaders[k] = v
+	}
+	reqHeaders.Set("User-Agent", c.s.userAgent())
+	var body io.Reader = nil
+	body, err := googleapi.WithoutDataWrapper.JSONReader(c.sslpolicy)
+	if err != nil {
+		return nil, err
+	}
+	reqHeaders.Set("Content-Type", "application/json")
+	c.urlParams_.Set("alt", alt)
+	c.urlParams_.Set("prettyPrint", "false")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "projects/{project}/regions/{region}/sslPolicies")
+	urls += "?" + c.urlParams_.Encode()
+	req, err := http.NewRequest("POST", urls, body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header = reqHeaders
+	googleapi.Expand(req.URL, map[string]string{
+		"project": c.project,
+		"region":  c.region,
+	})
+	return gensupport.SendRequest(c.ctx_, c.s.client, req)
+}
+
+// Do executes the "compute.regionSslPolicies.insert" call.
+// Exactly one of *Operation or error will be non-nil. Any non-2xx
+// status code is an error. Response headers are in either
+// *Operation.ServerResponse.Header or (if a response was returned at
+// all) in error.(*googleapi.Error).Header. Use googleapi.IsNotModified
+// to check whether the returned error was because
+// http.StatusNotModified was returned.
+func (c *RegionSslPoliciesInsertCall) Do(opts ...googleapi.CallOption) (*Operation, error) {
+	gensupport.SetOptions(c.urlParams_, opts...)
+	res, err := c.doRequest("json")
+	if res != nil && res.StatusCode == http.StatusNotModified {
+		if res.Body != nil {
+			res.Body.Close()
+		}
+		return nil, &googleapi.Error{
+			Code:   res.StatusCode,
+			Header: res.Header,
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	defer googleapi.CloseBody(res)
+	if err := googleapi.CheckResponse(res); err != nil {
+		return nil, err
+	}
+	ret := &Operation{
+		ServerResponse: googleapi.ServerResponse{
+			Header:         res.Header,
+			HTTPStatusCode: res.StatusCode,
+		},
+	}
+	target := &ret
+	if err := gensupport.DecodeResponse(target, res); err != nil {
+		return nil, err
+	}
+	return ret, nil
+	// {
+	//   "description": "Creates a new policy in the specified project and region using the data included in the request.",
+	//   "flatPath": "projects/{project}/regions/{region}/sslPolicies",
+	//   "httpMethod": "POST",
+	//   "id": "compute.regionSslPolicies.insert",
+	//   "parameterOrder": [
+	//     "project",
+	//     "region"
+	//   ],
+	//   "parameters": {
+	//     "project": {
+	//       "description": "Project ID for this request.",
+	//       "location": "path",
+	//       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "region": {
+	//       "description": "Name of the region scoping this request.",
+	//       "location": "path",
+	//       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "requestId": {
+	//       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported ( 00000000-0000-0000-0000-000000000000).",
+	//       "location": "query",
+	//       "type": "string"
+	//     }
+	//   },
+	//   "path": "projects/{project}/regions/{region}/sslPolicies",
+	//   "request": {
+	//     "$ref": "SslPolicy"
+	//   },
+	//   "response": {
+	//     "$ref": "Operation"
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/cloud-platform",
+	//     "https://www.googleapis.com/auth/compute"
+	//   ]
+	// }
+
+}
+
+// method id "compute.regionSslPolicies.list":
+
+type RegionSslPoliciesListCall struct {
+	s            *Service
+	project      string
+	region       string
+	urlParams_   gensupport.URLParams
+	ifNoneMatch_ string
+	ctx_         context.Context
+	header_      http.Header
+}
+
+// List: Lists all the SSL policies that have been configured for the
+// specified project and region.
+//
+// - project: Project ID for this request.
+// - region: Name of the region scoping this request.
+func (r *RegionSslPoliciesService) List(project string, region string) *RegionSslPoliciesListCall {
+	c := &RegionSslPoliciesListCall{s: r.s, urlParams_: make(gensupport.URLParams)}
+	c.project = project
+	c.region = region
+	return c
+}
+
+// Filter sets the optional parameter "filter": A filter expression that
+// filters resources listed in the response. The expression must specify
+// the field name, an operator, and the value that you want to use for
+// filtering. The value must be a string, a number, or a boolean. The
+// operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=` or `:`. For
+// example, if you are filtering Compute Engine instances, you can
+// exclude instances named `example-instance` by specifying `name !=
+// example-instance`. The `:` operator can be used with string fields to
+// match substrings. For non-string fields it is equivalent to the `=`
+// operator. The `:*` comparison can be used to test whether a key has
+// been defined. For example, to find all objects with `owner` label
+// use: ``` labels.owner:* ``` You can also filter nested fields. For
+// example, you could specify `scheduling.automaticRestart = false` to
+// include instances only if they are not scheduled for automatic
+// restarts. You can use filtering on nested fields to filter based on
+// resource labels. To filter on multiple expressions, provide each
+// separate expression within parentheses. For example: ```
+// (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake")
+// ``` By default, each expression is an `AND` expression. However, you
+// can include `AND` and `OR` expressions explicitly. For example: ```
+// (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell")
+// AND (scheduling.automaticRestart = true) ```
+func (c *RegionSslPoliciesListCall) Filter(filter string) *RegionSslPoliciesListCall {
+	c.urlParams_.Set("filter", filter)
+	return c
+}
+
+// MaxResults sets the optional parameter "maxResults": The maximum
+// number of results per page that should be returned. If the number of
+// available results is larger than `maxResults`, Compute Engine returns
+// a `nextPageToken` that can be used to get the next page of results in
+// subsequent list requests. Acceptable values are `0` to `500`,
+// inclusive. (Default: `500`)
+func (c *RegionSslPoliciesListCall) MaxResults(maxResults int64) *RegionSslPoliciesListCall {
+	c.urlParams_.Set("maxResults", fmt.Sprint(maxResults))
+	return c
+}
+
+// OrderBy sets the optional parameter "orderBy": Sorts list results by
+// a certain order. By default, results are returned in alphanumerical
+// order based on the resource name. You can also sort results in
+// descending order based on the creation timestamp using
+// `orderBy="creationTimestamp desc". This sorts results based on the
+// `creationTimestamp` field in reverse chronological order (newest
+// result first). Use this to sort resources like operations so that the
+// newest operation is returned first. Currently, only sorting by `name`
+// or `creationTimestamp desc` is supported.
+func (c *RegionSslPoliciesListCall) OrderBy(orderBy string) *RegionSslPoliciesListCall {
+	c.urlParams_.Set("orderBy", orderBy)
+	return c
+}
+
+// PageToken sets the optional parameter "pageToken": Specifies a page
+// token to use. Set `pageToken` to the `nextPageToken` returned by a
+// previous list request to get the next page of results.
+func (c *RegionSslPoliciesListCall) PageToken(pageToken string) *RegionSslPoliciesListCall {
+	c.urlParams_.Set("pageToken", pageToken)
+	return c
+}
+
+// ReturnPartialSuccess sets the optional parameter
+// "returnPartialSuccess": Opt-in for partial success behavior which
+// provides partial results in case of failure. The default value is
+// false.
+func (c *RegionSslPoliciesListCall) ReturnPartialSuccess(returnPartialSuccess bool) *RegionSslPoliciesListCall {
+	c.urlParams_.Set("returnPartialSuccess", fmt.Sprint(returnPartialSuccess))
+	return c
+}
+
+// Fields allows partial responses to be retrieved. See
+// https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
+// for more information.
+func (c *RegionSslPoliciesListCall) Fields(s ...googleapi.Field) *RegionSslPoliciesListCall {
+	c.urlParams_.Set("fields", googleapi.CombineFields(s))
+	return c
+}
+
+// IfNoneMatch sets the optional parameter which makes the operation
+// fail if the object's ETag matches the given value. This is useful for
+// getting updates only after the object has changed since the last
+// request. Use googleapi.IsNotModified to check whether the response
+// error from Do is the result of In-None-Match.
+func (c *RegionSslPoliciesListCall) IfNoneMatch(entityTag string) *RegionSslPoliciesListCall {
+	c.ifNoneMatch_ = entityTag
+	return c
+}
+
+// Context sets the context to be used in this call's Do method. Any
+// pending HTTP request will be aborted if the provided context is
+// canceled.
+func (c *RegionSslPoliciesListCall) Context(ctx context.Context) *RegionSslPoliciesListCall {
+	c.ctx_ = ctx
+	return c
+}
+
+// Header returns an http.Header that can be modified by the caller to
+// add HTTP headers to the request.
+func (c *RegionSslPoliciesListCall) Header() http.Header {
+	if c.header_ == nil {
+		c.header_ = make(http.Header)
+	}
+	return c.header_
+}
+
+func (c *RegionSslPoliciesListCall) doRequest(alt string) (*http.Response, error) {
+	reqHeaders := make(http.Header)
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
+	for k, v := range c.header_ {
+		reqHeaders[k] = v
+	}
+	reqHeaders.Set("User-Agent", c.s.userAgent())
+	if c.ifNoneMatch_ != "" {
+		reqHeaders.Set("If-None-Match", c.ifNoneMatch_)
+	}
+	var body io.Reader = nil
+	c.urlParams_.Set("alt", alt)
+	c.urlParams_.Set("prettyPrint", "false")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "projects/{project}/regions/{region}/sslPolicies")
+	urls += "?" + c.urlParams_.Encode()
+	req, err := http.NewRequest("GET", urls, body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header = reqHeaders
+	googleapi.Expand(req.URL, map[string]string{
+		"project": c.project,
+		"region":  c.region,
+	})
+	return gensupport.SendRequest(c.ctx_, c.s.client, req)
+}
+
+// Do executes the "compute.regionSslPolicies.list" call.
+// Exactly one of *SslPoliciesList or error will be non-nil. Any non-2xx
+// status code is an error. Response headers are in either
+// *SslPoliciesList.ServerResponse.Header or (if a response was returned
+// at all) in error.(*googleapi.Error).Header. Use
+// googleapi.IsNotModified to check whether the returned error was
+// because http.StatusNotModified was returned.
+func (c *RegionSslPoliciesListCall) Do(opts ...googleapi.CallOption) (*SslPoliciesList, error) {
+	gensupport.SetOptions(c.urlParams_, opts...)
+	res, err := c.doRequest("json")
+	if res != nil && res.StatusCode == http.StatusNotModified {
+		if res.Body != nil {
+			res.Body.Close()
+		}
+		return nil, &googleapi.Error{
+			Code:   res.StatusCode,
+			Header: res.Header,
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	defer googleapi.CloseBody(res)
+	if err := googleapi.CheckResponse(res); err != nil {
+		return nil, err
+	}
+	ret := &SslPoliciesList{
+		ServerResponse: googleapi.ServerResponse{
+			Header:         res.Header,
+			HTTPStatusCode: res.StatusCode,
+		},
+	}
+	target := &ret
+	if err := gensupport.DecodeResponse(target, res); err != nil {
+		return nil, err
+	}
+	return ret, nil
+	// {
+	//   "description": "Lists all the SSL policies that have been configured for the specified project and region.",
+	//   "flatPath": "projects/{project}/regions/{region}/sslPolicies",
+	//   "httpMethod": "GET",
+	//   "id": "compute.regionSslPolicies.list",
+	//   "parameterOrder": [
+	//     "project",
+	//     "region"
+	//   ],
+	//   "parameters": {
+	//     "filter": {
+	//       "description": "A filter expression that filters resources listed in the response. The expression must specify the field name, an operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The operator must be either `=`, `!=`, `\u003e`, `\u003c`, `\u003c=`, `\u003e=` or `:`. For example, if you are filtering Compute Engine instances, you can exclude instances named `example-instance` by specifying `name != example-instance`. The `:` operator can be used with string fields to match substrings. For non-string fields it is equivalent to the `=` operator. The `:*` comparison can be used to test whether a key has been defined. For example, to find all objects with `owner` label use: ``` labels.owner:* ``` You can also filter nested fields. For example, you could specify `scheduling.automaticRestart = false` to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels. To filter on multiple expressions, provide each separate expression within parentheses. For example: ``` (scheduling.automaticRestart = true) (cpuPlatform = \"Intel Skylake\") ``` By default, each expression is an `AND` expression. However, you can include `AND` and `OR` expressions explicitly. For example: ``` (cpuPlatform = \"Intel Skylake\") OR (cpuPlatform = \"Intel Broadwell\") AND (scheduling.automaticRestart = true) ```",
+	//       "location": "query",
+	//       "type": "string"
+	//     },
+	//     "maxResults": {
+	//       "default": "500",
+	//       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than `maxResults`, Compute Engine returns a `nextPageToken` that can be used to get the next page of results in subsequent list requests. Acceptable values are `0` to `500`, inclusive. (Default: `500`)",
+	//       "format": "uint32",
+	//       "location": "query",
+	//       "minimum": "0",
+	//       "type": "integer"
+	//     },
+	//     "orderBy": {
+	//       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using `orderBy=\"creationTimestamp desc\"`. This sorts results based on the `creationTimestamp` field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first. Currently, only sorting by `name` or `creationTimestamp desc` is supported.",
+	//       "location": "query",
+	//       "type": "string"
+	//     },
+	//     "pageToken": {
+	//       "description": "Specifies a page token to use. Set `pageToken` to the `nextPageToken` returned by a previous list request to get the next page of results.",
+	//       "location": "query",
+	//       "type": "string"
+	//     },
+	//     "project": {
+	//       "description": "Project ID for this request.",
+	//       "location": "path",
+	//       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "region": {
+	//       "description": "Name of the region scoping this request.",
+	//       "location": "path",
+	//       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "returnPartialSuccess": {
+	//       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false.",
+	//       "location": "query",
+	//       "type": "boolean"
+	//     }
+	//   },
+	//   "path": "projects/{project}/regions/{region}/sslPolicies",
+	//   "response": {
+	//     "$ref": "SslPoliciesList"
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/cloud-platform",
+	//     "https://www.googleapis.com/auth/compute",
+	//     "https://www.googleapis.com/auth/compute.readonly"
+	//   ]
+	// }
+
+}
+
+// Pages invokes f for each page of results.
+// A non-nil error returned from f will halt the iteration.
+// The provided context supersedes any context provided to the Context method.
+func (c *RegionSslPoliciesListCall) Pages(ctx context.Context, f func(*SslPoliciesList) error) error {
+	c.ctx_ = ctx
+	defer c.PageToken(c.urlParams_.Get("pageToken")) // reset paging to original point
+	for {
+		x, err := c.Do()
+		if err != nil {
+			return err
+		}
+		if err := f(x); err != nil {
+			return err
+		}
+		if x.NextPageToken == "" {
+			return nil
+		}
+		c.PageToken(x.NextPageToken)
+	}
+}
+
+// method id "compute.regionSslPolicies.listAvailableFeatures":
+
+type RegionSslPoliciesListAvailableFeaturesCall struct {
+	s            *Service
+	project      string
+	region       string
+	urlParams_   gensupport.URLParams
+	ifNoneMatch_ string
+	ctx_         context.Context
+	header_      http.Header
+}
+
+// ListAvailableFeatures: Lists all features that can be specified in
+// the SSL policy when using custom profile.
+//
+// - project: Project ID for this request.
+// - region: Name of the region scoping this request.
+func (r *RegionSslPoliciesService) ListAvailableFeatures(project string, region string) *RegionSslPoliciesListAvailableFeaturesCall {
+	c := &RegionSslPoliciesListAvailableFeaturesCall{s: r.s, urlParams_: make(gensupport.URLParams)}
+	c.project = project
+	c.region = region
+	return c
+}
+
+// Filter sets the optional parameter "filter": A filter expression that
+// filters resources listed in the response. The expression must specify
+// the field name, an operator, and the value that you want to use for
+// filtering. The value must be a string, a number, or a boolean. The
+// operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=` or `:`. For
+// example, if you are filtering Compute Engine instances, you can
+// exclude instances named `example-instance` by specifying `name !=
+// example-instance`. The `:` operator can be used with string fields to
+// match substrings. For non-string fields it is equivalent to the `=`
+// operator. The `:*` comparison can be used to test whether a key has
+// been defined. For example, to find all objects with `owner` label
+// use: ``` labels.owner:* ``` You can also filter nested fields. For
+// example, you could specify `scheduling.automaticRestart = false` to
+// include instances only if they are not scheduled for automatic
+// restarts. You can use filtering on nested fields to filter based on
+// resource labels. To filter on multiple expressions, provide each
+// separate expression within parentheses. For example: ```
+// (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake")
+// ``` By default, each expression is an `AND` expression. However, you
+// can include `AND` and `OR` expressions explicitly. For example: ```
+// (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell")
+// AND (scheduling.automaticRestart = true) ```
+func (c *RegionSslPoliciesListAvailableFeaturesCall) Filter(filter string) *RegionSslPoliciesListAvailableFeaturesCall {
+	c.urlParams_.Set("filter", filter)
+	return c
+}
+
+// MaxResults sets the optional parameter "maxResults": The maximum
+// number of results per page that should be returned. If the number of
+// available results is larger than `maxResults`, Compute Engine returns
+// a `nextPageToken` that can be used to get the next page of results in
+// subsequent list requests. Acceptable values are `0` to `500`,
+// inclusive. (Default: `500`)
+func (c *RegionSslPoliciesListAvailableFeaturesCall) MaxResults(maxResults int64) *RegionSslPoliciesListAvailableFeaturesCall {
+	c.urlParams_.Set("maxResults", fmt.Sprint(maxResults))
+	return c
+}
+
+// OrderBy sets the optional parameter "orderBy": Sorts list results by
+// a certain order. By default, results are returned in alphanumerical
+// order based on the resource name. You can also sort results in
+// descending order based on the creation timestamp using
+// `orderBy="creationTimestamp desc". This sorts results based on the
+// `creationTimestamp` field in reverse chronological order (newest
+// result first). Use this to sort resources like operations so that the
+// newest operation is returned first. Currently, only sorting by `name`
+// or `creationTimestamp desc` is supported.
+func (c *RegionSslPoliciesListAvailableFeaturesCall) OrderBy(orderBy string) *RegionSslPoliciesListAvailableFeaturesCall {
+	c.urlParams_.Set("orderBy", orderBy)
+	return c
+}
+
+// PageToken sets the optional parameter "pageToken": Specifies a page
+// token to use. Set `pageToken` to the `nextPageToken` returned by a
+// previous list request to get the next page of results.
+func (c *RegionSslPoliciesListAvailableFeaturesCall) PageToken(pageToken string) *RegionSslPoliciesListAvailableFeaturesCall {
+	c.urlParams_.Set("pageToken", pageToken)
+	return c
+}
+
+// ReturnPartialSuccess sets the optional parameter
+// "returnPartialSuccess": Opt-in for partial success behavior which
+// provides partial results in case of failure. The default value is
+// false.
+func (c *RegionSslPoliciesListAvailableFeaturesCall) ReturnPartialSuccess(returnPartialSuccess bool) *RegionSslPoliciesListAvailableFeaturesCall {
+	c.urlParams_.Set("returnPartialSuccess", fmt.Sprint(returnPartialSuccess))
+	return c
+}
+
+// Fields allows partial responses to be retrieved. See
+// https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
+// for more information.
+func (c *RegionSslPoliciesListAvailableFeaturesCall) Fields(s ...googleapi.Field) *RegionSslPoliciesListAvailableFeaturesCall {
+	c.urlParams_.Set("fields", googleapi.CombineFields(s))
+	return c
+}
+
+// IfNoneMatch sets the optional parameter which makes the operation
+// fail if the object's ETag matches the given value. This is useful for
+// getting updates only after the object has changed since the last
+// request. Use googleapi.IsNotModified to check whether the response
+// error from Do is the result of In-None-Match.
+func (c *RegionSslPoliciesListAvailableFeaturesCall) IfNoneMatch(entityTag string) *RegionSslPoliciesListAvailableFeaturesCall {
+	c.ifNoneMatch_ = entityTag
+	return c
+}
+
+// Context sets the context to be used in this call's Do method. Any
+// pending HTTP request will be aborted if the provided context is
+// canceled.
+func (c *RegionSslPoliciesListAvailableFeaturesCall) Context(ctx context.Context) *RegionSslPoliciesListAvailableFeaturesCall {
+	c.ctx_ = ctx
+	return c
+}
+
+// Header returns an http.Header that can be modified by the caller to
+// add HTTP headers to the request.
+func (c *RegionSslPoliciesListAvailableFeaturesCall) Header() http.Header {
+	if c.header_ == nil {
+		c.header_ = make(http.Header)
+	}
+	return c.header_
+}
+
+func (c *RegionSslPoliciesListAvailableFeaturesCall) doRequest(alt string) (*http.Response, error) {
+	reqHeaders := make(http.Header)
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
+	for k, v := range c.header_ {
+		reqHeaders[k] = v
+	}
+	reqHeaders.Set("User-Agent", c.s.userAgent())
+	if c.ifNoneMatch_ != "" {
+		reqHeaders.Set("If-None-Match", c.ifNoneMatch_)
+	}
+	var body io.Reader = nil
+	c.urlParams_.Set("alt", alt)
+	c.urlParams_.Set("prettyPrint", "false")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "projects/{project}/regions/{region}/sslPolicies/listAvailableFeatures")
+	urls += "?" + c.urlParams_.Encode()
+	req, err := http.NewRequest("GET", urls, body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header = reqHeaders
+	googleapi.Expand(req.URL, map[string]string{
+		"project": c.project,
+		"region":  c.region,
+	})
+	return gensupport.SendRequest(c.ctx_, c.s.client, req)
+}
+
+// Do executes the "compute.regionSslPolicies.listAvailableFeatures" call.
+// Exactly one of *SslPoliciesListAvailableFeaturesResponse or error
+// will be non-nil. Any non-2xx status code is an error. Response
+// headers are in either
+// *SslPoliciesListAvailableFeaturesResponse.ServerResponse.Header or
+// (if a response was returned at all) in
+// error.(*googleapi.Error).Header. Use googleapi.IsNotModified to check
+// whether the returned error was because http.StatusNotModified was
+// returned.
+func (c *RegionSslPoliciesListAvailableFeaturesCall) Do(opts ...googleapi.CallOption) (*SslPoliciesListAvailableFeaturesResponse, error) {
+	gensupport.SetOptions(c.urlParams_, opts...)
+	res, err := c.doRequest("json")
+	if res != nil && res.StatusCode == http.StatusNotModified {
+		if res.Body != nil {
+			res.Body.Close()
+		}
+		return nil, &googleapi.Error{
+			Code:   res.StatusCode,
+			Header: res.Header,
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	defer googleapi.CloseBody(res)
+	if err := googleapi.CheckResponse(res); err != nil {
+		return nil, err
+	}
+	ret := &SslPoliciesListAvailableFeaturesResponse{
+		ServerResponse: googleapi.ServerResponse{
+			Header:         res.Header,
+			HTTPStatusCode: res.StatusCode,
+		},
+	}
+	target := &ret
+	if err := gensupport.DecodeResponse(target, res); err != nil {
+		return nil, err
+	}
+	return ret, nil
+	// {
+	//   "description": "Lists all features that can be specified in the SSL policy when using custom profile.",
+	//   "flatPath": "projects/{project}/regions/{region}/sslPolicies/listAvailableFeatures",
+	//   "httpMethod": "GET",
+	//   "id": "compute.regionSslPolicies.listAvailableFeatures",
+	//   "parameterOrder": [
+	//     "project",
+	//     "region"
+	//   ],
+	//   "parameters": {
+	//     "filter": {
+	//       "description": "A filter expression that filters resources listed in the response. The expression must specify the field name, an operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The operator must be either `=`, `!=`, `\u003e`, `\u003c`, `\u003c=`, `\u003e=` or `:`. For example, if you are filtering Compute Engine instances, you can exclude instances named `example-instance` by specifying `name != example-instance`. The `:` operator can be used with string fields to match substrings. For non-string fields it is equivalent to the `=` operator. The `:*` comparison can be used to test whether a key has been defined. For example, to find all objects with `owner` label use: ``` labels.owner:* ``` You can also filter nested fields. For example, you could specify `scheduling.automaticRestart = false` to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels. To filter on multiple expressions, provide each separate expression within parentheses. For example: ``` (scheduling.automaticRestart = true) (cpuPlatform = \"Intel Skylake\") ``` By default, each expression is an `AND` expression. However, you can include `AND` and `OR` expressions explicitly. For example: ``` (cpuPlatform = \"Intel Skylake\") OR (cpuPlatform = \"Intel Broadwell\") AND (scheduling.automaticRestart = true) ```",
+	//       "location": "query",
+	//       "type": "string"
+	//     },
+	//     "maxResults": {
+	//       "default": "500",
+	//       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than `maxResults`, Compute Engine returns a `nextPageToken` that can be used to get the next page of results in subsequent list requests. Acceptable values are `0` to `500`, inclusive. (Default: `500`)",
+	//       "format": "uint32",
+	//       "location": "query",
+	//       "minimum": "0",
+	//       "type": "integer"
+	//     },
+	//     "orderBy": {
+	//       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using `orderBy=\"creationTimestamp desc\"`. This sorts results based on the `creationTimestamp` field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first. Currently, only sorting by `name` or `creationTimestamp desc` is supported.",
+	//       "location": "query",
+	//       "type": "string"
+	//     },
+	//     "pageToken": {
+	//       "description": "Specifies a page token to use. Set `pageToken` to the `nextPageToken` returned by a previous list request to get the next page of results.",
+	//       "location": "query",
+	//       "type": "string"
+	//     },
+	//     "project": {
+	//       "description": "Project ID for this request.",
+	//       "location": "path",
+	//       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "region": {
+	//       "description": "Name of the region scoping this request.",
+	//       "location": "path",
+	//       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "returnPartialSuccess": {
+	//       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false.",
+	//       "location": "query",
+	//       "type": "boolean"
+	//     }
+	//   },
+	//   "path": "projects/{project}/regions/{region}/sslPolicies/listAvailableFeatures",
+	//   "response": {
+	//     "$ref": "SslPoliciesListAvailableFeaturesResponse"
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/cloud-platform",
+	//     "https://www.googleapis.com/auth/compute",
+	//     "https://www.googleapis.com/auth/compute.readonly"
+	//   ]
+	// }
+
+}
+
+// method id "compute.regionSslPolicies.patch":
+
+type RegionSslPoliciesPatchCall struct {
+	s          *Service
+	project    string
+	region     string
+	sslPolicy  string
+	sslpolicy  *SslPolicy
+	urlParams_ gensupport.URLParams
+	ctx_       context.Context
+	header_    http.Header
+}
+
+// Patch: Patches the specified SSL policy with the data included in the
+// request.
+//
+// - project: Project ID for this request.
+// - region: Name of the region scoping this request.
+// - sslPolicy: Name of the SSL policy to update. The name must be 1-63
+//   characters long, and comply with RFC1035.
+func (r *RegionSslPoliciesService) Patch(project string, region string, sslPolicy string, sslpolicy *SslPolicy) *RegionSslPoliciesPatchCall {
+	c := &RegionSslPoliciesPatchCall{s: r.s, urlParams_: make(gensupport.URLParams)}
+	c.project = project
+	c.region = region
+	c.sslPolicy = sslPolicy
+	c.sslpolicy = sslpolicy
+	return c
+}
+
+// RequestId sets the optional parameter "requestId": An optional
+// request ID to identify requests. Specify a unique request ID so that
+// if you must retry your request, the server will know to ignore the
+// request if it has already been completed. For example, consider a
+// situation where you make an initial request and the request times
+// out. If you make the request again with the same request ID, the
+// server can check if original operation with the same request ID was
+// received, and if so, will ignore the second request. This prevents
+// clients from accidentally creating duplicate commitments. The request
+// ID must be a valid UUID with the exception that zero UUID is not
+// supported ( 00000000-0000-0000-0000-000000000000).
+func (c *RegionSslPoliciesPatchCall) RequestId(requestId string) *RegionSslPoliciesPatchCall {
+	c.urlParams_.Set("requestId", requestId)
+	return c
+}
+
+// Fields allows partial responses to be retrieved. See
+// https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
+// for more information.
+func (c *RegionSslPoliciesPatchCall) Fields(s ...googleapi.Field) *RegionSslPoliciesPatchCall {
+	c.urlParams_.Set("fields", googleapi.CombineFields(s))
+	return c
+}
+
+// Context sets the context to be used in this call's Do method. Any
+// pending HTTP request will be aborted if the provided context is
+// canceled.
+func (c *RegionSslPoliciesPatchCall) Context(ctx context.Context) *RegionSslPoliciesPatchCall {
+	c.ctx_ = ctx
+	return c
+}
+
+// Header returns an http.Header that can be modified by the caller to
+// add HTTP headers to the request.
+func (c *RegionSslPoliciesPatchCall) Header() http.Header {
+	if c.header_ == nil {
+		c.header_ = make(http.Header)
+	}
+	return c.header_
+}
+
+func (c *RegionSslPoliciesPatchCall) doRequest(alt string) (*http.Response, error) {
+	reqHeaders := make(http.Header)
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
+	for k, v := range c.header_ {
+		reqHeaders[k] = v
+	}
+	reqHeaders.Set("User-Agent", c.s.userAgent())
+	var body io.Reader = nil
+	body, err := googleapi.WithoutDataWrapper.JSONReader(c.sslpolicy)
+	if err != nil {
+		return nil, err
+	}
+	reqHeaders.Set("Content-Type", "application/json")
+	c.urlParams_.Set("alt", alt)
+	c.urlParams_.Set("prettyPrint", "false")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "projects/{project}/regions/{region}/sslPolicies/{sslPolicy}")
+	urls += "?" + c.urlParams_.Encode()
+	req, err := http.NewRequest("PATCH", urls, body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header = reqHeaders
+	googleapi.Expand(req.URL, map[string]string{
+		"project":   c.project,
+		"region":    c.region,
+		"sslPolicy": c.sslPolicy,
+	})
+	return gensupport.SendRequest(c.ctx_, c.s.client, req)
+}
+
+// Do executes the "compute.regionSslPolicies.patch" call.
+// Exactly one of *Operation or error will be non-nil. Any non-2xx
+// status code is an error. Response headers are in either
+// *Operation.ServerResponse.Header or (if a response was returned at
+// all) in error.(*googleapi.Error).Header. Use googleapi.IsNotModified
+// to check whether the returned error was because
+// http.StatusNotModified was returned.
+func (c *RegionSslPoliciesPatchCall) Do(opts ...googleapi.CallOption) (*Operation, error) {
+	gensupport.SetOptions(c.urlParams_, opts...)
+	res, err := c.doRequest("json")
+	if res != nil && res.StatusCode == http.StatusNotModified {
+		if res.Body != nil {
+			res.Body.Close()
+		}
+		return nil, &googleapi.Error{
+			Code:   res.StatusCode,
+			Header: res.Header,
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	defer googleapi.CloseBody(res)
+	if err := googleapi.CheckResponse(res); err != nil {
+		return nil, err
+	}
+	ret := &Operation{
+		ServerResponse: googleapi.ServerResponse{
+			Header:         res.Header,
+			HTTPStatusCode: res.StatusCode,
+		},
+	}
+	target := &ret
+	if err := gensupport.DecodeResponse(target, res); err != nil {
+		return nil, err
+	}
+	return ret, nil
+	// {
+	//   "description": "Patches the specified SSL policy with the data included in the request.",
+	//   "flatPath": "projects/{project}/regions/{region}/sslPolicies/{sslPolicy}",
+	//   "httpMethod": "PATCH",
+	//   "id": "compute.regionSslPolicies.patch",
+	//   "parameterOrder": [
+	//     "project",
+	//     "region",
+	//     "sslPolicy"
+	//   ],
+	//   "parameters": {
+	//     "project": {
+	//       "description": "Project ID for this request.",
+	//       "location": "path",
+	//       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "region": {
+	//       "description": "Name of the region scoping this request.",
+	//       "location": "path",
+	//       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "requestId": {
+	//       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported ( 00000000-0000-0000-0000-000000000000).",
+	//       "location": "query",
+	//       "type": "string"
+	//     },
+	//     "sslPolicy": {
+	//       "description": "Name of the SSL policy to update. The name must be 1-63 characters long, and comply with RFC1035.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     }
+	//   },
+	//   "path": "projects/{project}/regions/{region}/sslPolicies/{sslPolicy}",
+	//   "request": {
+	//     "$ref": "SslPolicy"
+	//   },
+	//   "response": {
+	//     "$ref": "Operation"
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/cloud-platform",
+	//     "https://www.googleapis.com/auth/compute"
+	//   ]
+	// }
+
+}
+
+// method id "compute.regionSslPolicies.testIamPermissions":
+
+type RegionSslPoliciesTestIamPermissionsCall struct {
+	s                      *Service
+	project                string
+	region                 string
+	resource               string
+	testpermissionsrequest *TestPermissionsRequest
+	urlParams_             gensupport.URLParams
+	ctx_                   context.Context
+	header_                http.Header
+}
+
+// TestIamPermissions: Returns permissions that a caller has on the
+// specified resource.
+//
+// - project: Project ID for this request.
+// - region: The name of the region for this request.
+// - resource: Name or id of the resource for this request.
+func (r *RegionSslPoliciesService) TestIamPermissions(project string, region string, resource string, testpermissionsrequest *TestPermissionsRequest) *RegionSslPoliciesTestIamPermissionsCall {
+	c := &RegionSslPoliciesTestIamPermissionsCall{s: r.s, urlParams_: make(gensupport.URLParams)}
+	c.project = project
+	c.region = region
+	c.resource = resource
+	c.testpermissionsrequest = testpermissionsrequest
+	return c
+}
+
+// Fields allows partial responses to be retrieved. See
+// https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
+// for more information.
+func (c *RegionSslPoliciesTestIamPermissionsCall) Fields(s ...googleapi.Field) *RegionSslPoliciesTestIamPermissionsCall {
+	c.urlParams_.Set("fields", googleapi.CombineFields(s))
+	return c
+}
+
+// Context sets the context to be used in this call's Do method. Any
+// pending HTTP request will be aborted if the provided context is
+// canceled.
+func (c *RegionSslPoliciesTestIamPermissionsCall) Context(ctx context.Context) *RegionSslPoliciesTestIamPermissionsCall {
+	c.ctx_ = ctx
+	return c
+}
+
+// Header returns an http.Header that can be modified by the caller to
+// add HTTP headers to the request.
+func (c *RegionSslPoliciesTestIamPermissionsCall) Header() http.Header {
+	if c.header_ == nil {
+		c.header_ = make(http.Header)
+	}
+	return c.header_
+}
+
+func (c *RegionSslPoliciesTestIamPermissionsCall) doRequest(alt string) (*http.Response, error) {
+	reqHeaders := make(http.Header)
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
+	for k, v := range c.header_ {
+		reqHeaders[k] = v
+	}
+	reqHeaders.Set("User-Agent", c.s.userAgent())
+	var body io.Reader = nil
+	body, err := googleapi.WithoutDataWrapper.JSONReader(c.testpermissionsrequest)
+	if err != nil {
+		return nil, err
+	}
+	reqHeaders.Set("Content-Type", "application/json")
+	c.urlParams_.Set("alt", alt)
+	c.urlParams_.Set("prettyPrint", "false")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "projects/{project}/regions/{region}/sslPolicies/{resource}/testIamPermissions")
+	urls += "?" + c.urlParams_.Encode()
+	req, err := http.NewRequest("POST", urls, body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header = reqHeaders
+	googleapi.Expand(req.URL, map[string]string{
+		"project":  c.project,
+		"region":   c.region,
+		"resource": c.resource,
+	})
+	return gensupport.SendRequest(c.ctx_, c.s.client, req)
+}
+
+// Do executes the "compute.regionSslPolicies.testIamPermissions" call.
+// Exactly one of *TestPermissionsResponse or error will be non-nil. Any
+// non-2xx status code is an error. Response headers are in either
+// *TestPermissionsResponse.ServerResponse.Header or (if a response was
+// returned at all) in error.(*googleapi.Error).Header. Use
+// googleapi.IsNotModified to check whether the returned error was
+// because http.StatusNotModified was returned.
+func (c *RegionSslPoliciesTestIamPermissionsCall) Do(opts ...googleapi.CallOption) (*TestPermissionsResponse, error) {
+	gensupport.SetOptions(c.urlParams_, opts...)
+	res, err := c.doRequest("json")
+	if res != nil && res.StatusCode == http.StatusNotModified {
+		if res.Body != nil {
+			res.Body.Close()
+		}
+		return nil, &googleapi.Error{
+			Code:   res.StatusCode,
+			Header: res.Header,
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	defer googleapi.CloseBody(res)
+	if err := googleapi.CheckResponse(res); err != nil {
+		return nil, err
+	}
+	ret := &TestPermissionsResponse{
+		ServerResponse: googleapi.ServerResponse{
+			Header:         res.Header,
+			HTTPStatusCode: res.StatusCode,
+		},
+	}
+	target := &ret
+	if err := gensupport.DecodeResponse(target, res); err != nil {
+		return nil, err
+	}
+	return ret, nil
+	// {
+	//   "description": "Returns permissions that a caller has on the specified resource.",
+	//   "flatPath": "projects/{project}/regions/{region}/sslPolicies/{resource}/testIamPermissions",
+	//   "httpMethod": "POST",
+	//   "id": "compute.regionSslPolicies.testIamPermissions",
+	//   "parameterOrder": [
+	//     "project",
+	//     "region",
+	//     "resource"
+	//   ],
+	//   "parameters": {
+	//     "project": {
+	//       "description": "Project ID for this request.",
+	//       "location": "path",
+	//       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "region": {
+	//       "description": "The name of the region for this request.",
+	//       "location": "path",
+	//       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "resource": {
+	//       "description": "Name or id of the resource for this request.",
+	//       "location": "path",
+	//       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+	//       "required": true,
+	//       "type": "string"
+	//     }
+	//   },
+	//   "path": "projects/{project}/regions/{region}/sslPolicies/{resource}/testIamPermissions",
+	//   "request": {
+	//     "$ref": "TestPermissionsRequest"
+	//   },
+	//   "response": {
+	//     "$ref": "TestPermissionsResponse"
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/cloud-platform",
+	//     "https://www.googleapis.com/auth/compute",
+	//     "https://www.googleapis.com/auth/compute.readonly"
+	//   ]
+	// }
+
+}
+
 // method id "compute.regionTargetHttpProxies.delete":
 
 type RegionTargetHttpProxiesDeleteCall struct {
@@ -178910,6 +181225,291 @@ func (c *SslCertificatesTestIamPermissionsCall) Do(opts ...googleapi.CallOption)
 	//   ]
 	// }
 
+}
+
+// method id "compute.sslPolicies.aggregatedList":
+
+type SslPoliciesAggregatedListCall struct {
+	s            *Service
+	project      string
+	urlParams_   gensupport.URLParams
+	ifNoneMatch_ string
+	ctx_         context.Context
+	header_      http.Header
+}
+
+// AggregatedList: Retrieves the list of all SslPolicy resources,
+// regional and global, available to the specified project.
+//
+// - project: Name of the project scoping this request.
+func (r *SslPoliciesService) AggregatedList(project string) *SslPoliciesAggregatedListCall {
+	c := &SslPoliciesAggregatedListCall{s: r.s, urlParams_: make(gensupport.URLParams)}
+	c.project = project
+	return c
+}
+
+// Filter sets the optional parameter "filter": A filter expression that
+// filters resources listed in the response. The expression must specify
+// the field name, an operator, and the value that you want to use for
+// filtering. The value must be a string, a number, or a boolean. The
+// operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=` or `:`. For
+// example, if you are filtering Compute Engine instances, you can
+// exclude instances named `example-instance` by specifying `name !=
+// example-instance`. The `:` operator can be used with string fields to
+// match substrings. For non-string fields it is equivalent to the `=`
+// operator. The `:*` comparison can be used to test whether a key has
+// been defined. For example, to find all objects with `owner` label
+// use: ``` labels.owner:* ``` You can also filter nested fields. For
+// example, you could specify `scheduling.automaticRestart = false` to
+// include instances only if they are not scheduled for automatic
+// restarts. You can use filtering on nested fields to filter based on
+// resource labels. To filter on multiple expressions, provide each
+// separate expression within parentheses. For example: ```
+// (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake")
+// ``` By default, each expression is an `AND` expression. However, you
+// can include `AND` and `OR` expressions explicitly. For example: ```
+// (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell")
+// AND (scheduling.automaticRestart = true) ```
+func (c *SslPoliciesAggregatedListCall) Filter(filter string) *SslPoliciesAggregatedListCall {
+	c.urlParams_.Set("filter", filter)
+	return c
+}
+
+// IncludeAllScopes sets the optional parameter "includeAllScopes":
+// Indicates whether every visible scope for each scope type (zone,
+// region, global) should be included in the response. For new resource
+// types added after this field, the flag has no effect as new resource
+// types will always include every visible scope for each scope type in
+// response. For resource types which predate this field, if this flag
+// is omitted or false, only scopes of the scope types where the
+// resource type is expected to be found will be included.
+func (c *SslPoliciesAggregatedListCall) IncludeAllScopes(includeAllScopes bool) *SslPoliciesAggregatedListCall {
+	c.urlParams_.Set("includeAllScopes", fmt.Sprint(includeAllScopes))
+	return c
+}
+
+// MaxResults sets the optional parameter "maxResults": The maximum
+// number of results per page that should be returned. If the number of
+// available results is larger than `maxResults`, Compute Engine returns
+// a `nextPageToken` that can be used to get the next page of results in
+// subsequent list requests. Acceptable values are `0` to `500`,
+// inclusive. (Default: `500`)
+func (c *SslPoliciesAggregatedListCall) MaxResults(maxResults int64) *SslPoliciesAggregatedListCall {
+	c.urlParams_.Set("maxResults", fmt.Sprint(maxResults))
+	return c
+}
+
+// OrderBy sets the optional parameter "orderBy": Sorts list results by
+// a certain order. By default, results are returned in alphanumerical
+// order based on the resource name. You can also sort results in
+// descending order based on the creation timestamp using
+// `orderBy="creationTimestamp desc". This sorts results based on the
+// `creationTimestamp` field in reverse chronological order (newest
+// result first). Use this to sort resources like operations so that the
+// newest operation is returned first. Currently, only sorting by `name`
+// or `creationTimestamp desc` is supported.
+func (c *SslPoliciesAggregatedListCall) OrderBy(orderBy string) *SslPoliciesAggregatedListCall {
+	c.urlParams_.Set("orderBy", orderBy)
+	return c
+}
+
+// PageToken sets the optional parameter "pageToken": Specifies a page
+// token to use. Set `pageToken` to the `nextPageToken` returned by a
+// previous list request to get the next page of results.
+func (c *SslPoliciesAggregatedListCall) PageToken(pageToken string) *SslPoliciesAggregatedListCall {
+	c.urlParams_.Set("pageToken", pageToken)
+	return c
+}
+
+// ReturnPartialSuccess sets the optional parameter
+// "returnPartialSuccess": Opt-in for partial success behavior which
+// provides partial results in case of failure. The default value is
+// false.
+func (c *SslPoliciesAggregatedListCall) ReturnPartialSuccess(returnPartialSuccess bool) *SslPoliciesAggregatedListCall {
+	c.urlParams_.Set("returnPartialSuccess", fmt.Sprint(returnPartialSuccess))
+	return c
+}
+
+// Fields allows partial responses to be retrieved. See
+// https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
+// for more information.
+func (c *SslPoliciesAggregatedListCall) Fields(s ...googleapi.Field) *SslPoliciesAggregatedListCall {
+	c.urlParams_.Set("fields", googleapi.CombineFields(s))
+	return c
+}
+
+// IfNoneMatch sets the optional parameter which makes the operation
+// fail if the object's ETag matches the given value. This is useful for
+// getting updates only after the object has changed since the last
+// request. Use googleapi.IsNotModified to check whether the response
+// error from Do is the result of In-None-Match.
+func (c *SslPoliciesAggregatedListCall) IfNoneMatch(entityTag string) *SslPoliciesAggregatedListCall {
+	c.ifNoneMatch_ = entityTag
+	return c
+}
+
+// Context sets the context to be used in this call's Do method. Any
+// pending HTTP request will be aborted if the provided context is
+// canceled.
+func (c *SslPoliciesAggregatedListCall) Context(ctx context.Context) *SslPoliciesAggregatedListCall {
+	c.ctx_ = ctx
+	return c
+}
+
+// Header returns an http.Header that can be modified by the caller to
+// add HTTP headers to the request.
+func (c *SslPoliciesAggregatedListCall) Header() http.Header {
+	if c.header_ == nil {
+		c.header_ = make(http.Header)
+	}
+	return c.header_
+}
+
+func (c *SslPoliciesAggregatedListCall) doRequest(alt string) (*http.Response, error) {
+	reqHeaders := make(http.Header)
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
+	for k, v := range c.header_ {
+		reqHeaders[k] = v
+	}
+	reqHeaders.Set("User-Agent", c.s.userAgent())
+	if c.ifNoneMatch_ != "" {
+		reqHeaders.Set("If-None-Match", c.ifNoneMatch_)
+	}
+	var body io.Reader = nil
+	c.urlParams_.Set("alt", alt)
+	c.urlParams_.Set("prettyPrint", "false")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "projects/{project}/aggregated/sslPolicies")
+	urls += "?" + c.urlParams_.Encode()
+	req, err := http.NewRequest("GET", urls, body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header = reqHeaders
+	googleapi.Expand(req.URL, map[string]string{
+		"project": c.project,
+	})
+	return gensupport.SendRequest(c.ctx_, c.s.client, req)
+}
+
+// Do executes the "compute.sslPolicies.aggregatedList" call.
+// Exactly one of *SslPoliciesAggregatedList or error will be non-nil.
+// Any non-2xx status code is an error. Response headers are in either
+// *SslPoliciesAggregatedList.ServerResponse.Header or (if a response
+// was returned at all) in error.(*googleapi.Error).Header. Use
+// googleapi.IsNotModified to check whether the returned error was
+// because http.StatusNotModified was returned.
+func (c *SslPoliciesAggregatedListCall) Do(opts ...googleapi.CallOption) (*SslPoliciesAggregatedList, error) {
+	gensupport.SetOptions(c.urlParams_, opts...)
+	res, err := c.doRequest("json")
+	if res != nil && res.StatusCode == http.StatusNotModified {
+		if res.Body != nil {
+			res.Body.Close()
+		}
+		return nil, &googleapi.Error{
+			Code:   res.StatusCode,
+			Header: res.Header,
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	defer googleapi.CloseBody(res)
+	if err := googleapi.CheckResponse(res); err != nil {
+		return nil, err
+	}
+	ret := &SslPoliciesAggregatedList{
+		ServerResponse: googleapi.ServerResponse{
+			Header:         res.Header,
+			HTTPStatusCode: res.StatusCode,
+		},
+	}
+	target := &ret
+	if err := gensupport.DecodeResponse(target, res); err != nil {
+		return nil, err
+	}
+	return ret, nil
+	// {
+	//   "description": "Retrieves the list of all SslPolicy resources, regional and global, available to the specified project.",
+	//   "flatPath": "projects/{project}/aggregated/sslPolicies",
+	//   "httpMethod": "GET",
+	//   "id": "compute.sslPolicies.aggregatedList",
+	//   "parameterOrder": [
+	//     "project"
+	//   ],
+	//   "parameters": {
+	//     "filter": {
+	//       "description": "A filter expression that filters resources listed in the response. The expression must specify the field name, an operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The operator must be either `=`, `!=`, `\u003e`, `\u003c`, `\u003c=`, `\u003e=` or `:`. For example, if you are filtering Compute Engine instances, you can exclude instances named `example-instance` by specifying `name != example-instance`. The `:` operator can be used with string fields to match substrings. For non-string fields it is equivalent to the `=` operator. The `:*` comparison can be used to test whether a key has been defined. For example, to find all objects with `owner` label use: ``` labels.owner:* ``` You can also filter nested fields. For example, you could specify `scheduling.automaticRestart = false` to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels. To filter on multiple expressions, provide each separate expression within parentheses. For example: ``` (scheduling.automaticRestart = true) (cpuPlatform = \"Intel Skylake\") ``` By default, each expression is an `AND` expression. However, you can include `AND` and `OR` expressions explicitly. For example: ``` (cpuPlatform = \"Intel Skylake\") OR (cpuPlatform = \"Intel Broadwell\") AND (scheduling.automaticRestart = true) ```",
+	//       "location": "query",
+	//       "type": "string"
+	//     },
+	//     "includeAllScopes": {
+	//       "description": "Indicates whether every visible scope for each scope type (zone, region, global) should be included in the response. For new resource types added after this field, the flag has no effect as new resource types will always include every visible scope for each scope type in response. For resource types which predate this field, if this flag is omitted or false, only scopes of the scope types where the resource type is expected to be found will be included.",
+	//       "location": "query",
+	//       "type": "boolean"
+	//     },
+	//     "maxResults": {
+	//       "default": "500",
+	//       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than `maxResults`, Compute Engine returns a `nextPageToken` that can be used to get the next page of results in subsequent list requests. Acceptable values are `0` to `500`, inclusive. (Default: `500`)",
+	//       "format": "uint32",
+	//       "location": "query",
+	//       "minimum": "0",
+	//       "type": "integer"
+	//     },
+	//     "orderBy": {
+	//       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using `orderBy=\"creationTimestamp desc\"`. This sorts results based on the `creationTimestamp` field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first. Currently, only sorting by `name` or `creationTimestamp desc` is supported.",
+	//       "location": "query",
+	//       "type": "string"
+	//     },
+	//     "pageToken": {
+	//       "description": "Specifies a page token to use. Set `pageToken` to the `nextPageToken` returned by a previous list request to get the next page of results.",
+	//       "location": "query",
+	//       "type": "string"
+	//     },
+	//     "project": {
+	//       "description": "Name of the project scoping this request.",
+	//       "location": "path",
+	//       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "returnPartialSuccess": {
+	//       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false.",
+	//       "location": "query",
+	//       "type": "boolean"
+	//     }
+	//   },
+	//   "path": "projects/{project}/aggregated/sslPolicies",
+	//   "response": {
+	//     "$ref": "SslPoliciesAggregatedList"
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/cloud-platform",
+	//     "https://www.googleapis.com/auth/compute",
+	//     "https://www.googleapis.com/auth/compute.readonly"
+	//   ]
+	// }
+
+}
+
+// Pages invokes f for each page of results.
+// A non-nil error returned from f will halt the iteration.
+// The provided context supersedes any context provided to the Context method.
+func (c *SslPoliciesAggregatedListCall) Pages(ctx context.Context, f func(*SslPoliciesAggregatedList) error) error {
+	c.ctx_ = ctx
+	defer c.PageToken(c.urlParams_.Get("pageToken")) // reset paging to original point
+	for {
+		x, err := c.Do()
+		if err != nil {
+			return err
+		}
+		if err := f(x); err != nil {
+			return err
+		}
+		if x.NextPageToken == "" {
+			return nil
+		}
+		c.PageToken(x.NextPageToken)
+	}
 }
 
 // method id "compute.sslPolicies.delete":
