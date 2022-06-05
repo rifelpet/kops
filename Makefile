@@ -389,7 +389,7 @@ ci: govet verify-gofmt verify-crds verify-gomod verify-goimports verify-boilerpl
 
 # we skip tasks that are covered by other jobs
 .PHONY: quick-ci
-quick-ci: verify-crds verify-goimports govet verify-boilerplate verify-versions verify-misspelling verify-shellcheck | verify-gendocs verify-apimachinery verify-codegen
+quick-ci: verify-gomod | verify-gendocs verify-apimachinery verify-codegen
 	echo "Done!"
 
 # --------------------------------------------------
