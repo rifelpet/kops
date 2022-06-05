@@ -21,6 +21,7 @@ jobs:
 
       - uses: actions/checkout@629c2de402a417ea7690ca6ce3f33229e27606a5 # v2 https://api.github.com/repos/actions/checkout/git/tags/629c2de402a417ea7690ca6ce3f33229e27606a5
         with:
+          fetch-depth: 0
           path: ${{ env.GOPATH }}/src/k8s.io/kops
 
       - name: Update go modules
