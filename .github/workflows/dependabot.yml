@@ -38,4 +38,4 @@ jobs:
           git config --local user.name "GitHub Actions Dependabot Update"
           git add .
           git commit -m "Update go modules"
-          git push
+          git push origin "HEAD:$GITHUB_HEAD_REF"
