@@ -1262,8 +1262,8 @@ github.com/spf13/viper v1.8.1/go.mod h1:o0Pch8wJ9BVSWGQMbra6iw0oQ5oktSIBaujf1rJH
 github.com/spf13/viper v1.10.0/go.mod h1:SoyBPwAtKDzypXNDFKN5kzH7ppppbGZtls1UpIy5AsM=
 github.com/spf13/viper v1.12.0 h1:CZ7eSOd3kZoaYDLbXnmzgQI5RlciuXBMA+18HwHRfZQ=
 github.com/spf13/viper v1.12.0/go.mod h1:b6COn30jlNxbm/V2IqWiNWkJ+vZNiMNksliPCiuKtSI=
-github.com/spotinst/spotinst-sdk-go v1.118.0 h1:s5FpOVXo9XlO3NcpIEgMkBFluFjJ2Cpm+yFfYWCUM7k=
-github.com/spotinst/spotinst-sdk-go v1.118.0/go.mod h1:786KK8PDw7vdtLgni44bUS1JjxdA/Xa2XLhsqTHXQdg=
+github.com/spotinst/spotinst-sdk-go v1.120.0 h1:cwAx284c4mQDvL6hXI4e+XNC3snICIEWeuDJvN3YPA4=
+github.com/spotinst/spotinst-sdk-go v1.120.0/go.mod h1:786KK8PDw7vdtLgni44bUS1JjxdA/Xa2XLhsqTHXQdg=
 github.com/stefanberger/go-pkcs11uri v0.0.0-20201008174630-78d3cae3a980/go.mod h1:AO3tvPzVZ/ayst6UlUKUv6rcPQInYe3IknH3jYhAKu8=
 github.com/stoewer/go-strcase v1.2.0/go.mod h1:IBiWB2sKIp3wVVQ3Y035++gc+knqhUQag1KpM8ahLw8=
 github.com/storageos/go-api v2.2.0+incompatible/go.mod h1:ZrLn+e0ZuF3Y65PNF6dIwbJPZqfmtCXxFm9ckv0agOY=
