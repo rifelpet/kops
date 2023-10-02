@@ -30,8 +30,8 @@ jobs:
         run: |
           make all examples test
 
-  build-macos-amd64:
-    runs-on: macos-latest
+  build-macos-arm64:
+    runs-on: macos-latest-xlarge
     steps:
     - name: Set up go
       uses: actions/setup-go@93397bea11091df50f3d7e59dc26a7711a8bcfbe
