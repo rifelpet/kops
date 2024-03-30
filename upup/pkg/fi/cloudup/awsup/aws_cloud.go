@@ -33,6 +33,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws/arn"
 	"github.com/aws/aws-sdk-go-v2/aws/retry"
+	"github.com/aws/aws-sdk-go-v2/service/iam"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
@@ -46,8 +47,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/elb/elbiface"
 	"github.com/aws/aws-sdk-go/service/elbv2"
 	"github.com/aws/aws-sdk-go/service/elbv2/elbv2iface"
-	"github.com/aws/aws-sdk-go/service/iam"
-	"github.com/aws/aws-sdk-go/service/iam/iamiface"
 	"github.com/aws/aws-sdk-go/service/route53"
 	"github.com/aws/aws-sdk-go/service/route53/route53iface"
 	"github.com/aws/aws-sdk-go/service/ssm"
@@ -129,7 +128,7 @@ type AWSCloud interface {
 	fi.Cloud
 	Session() (*session.Session, error)
 	EC2() ec2iface.EC2API
-	IAM() iamiface.IAMAPI
+	IAM() awsinterfaces.IAMAPI
 	ELB() elbiface.ELBAPI
 	ELBV2() elbv2iface.ELBV2API
 	Autoscaling() autoscalingiface.AutoScalingAPI
@@ -198,7 +197,7 @@ type AWSCloud interface {
 
 type awsCloudImplementation struct {
 	ec2         *ec2.EC2
-	iam         *iam.IAM
+	iam         *iam.Client
 	elb         *elb.ELB
 	elbv2       *elbv2.ELBV2
 	autoscaling *autoscaling.AutoScaling
@@ -334,16 +333,7 @@ func NewAWSCloud(region string, tags map[string]string) (AWSCloud, error) {
 		c.ec2.Handlers.Send.PushFront(requestLogger)
 		c.addHandlers(region, &c.ec2.Handlers)
 
-		sess, err = session.NewSessionWithOptions(session.Options{
-			Config:            *config,
-			SharedConfigState: session.SharedConfigEnable,
-		})
-		if err != nil {
-			return c, err
-		}
-		c.iam = iam.New(sess, config)
-		c.iam.Handlers.Send.PushFront(requestLogger)
-		c.addHandlers(region, &c.iam.Handlers)
+		c.iam = iam.NewFromConfig(cfgV2)
 
 		sess, err = session.NewSessionWithOptions(session.Options{
 			Config:            *config,
@@ -2205,7 +2195,7 @@ func (c *awsCloudImplementation) EC2() ec2iface.EC2API {
 	return c.ec2
 }
 
-func (c *awsCloudImplementation) IAM() iamiface.IAMAPI {
+func (c *awsCloudImplementation) IAM() awsinterfaces.IAMAPI {
 	return c.iam
 }
 
@@ -2475,7 +2465,7 @@ func (c *awsCloudImplementation) AccountInfo() (string, string, error) {
 
 // GetRolesInInstanceProfile return role names which are associated with the instance profile specified by profileName.
 func GetRolesInInstanceProfile(c AWSCloud, profileName string) ([]string, error) {
-	output, err := c.IAM().GetInstanceProfile(&iam.GetInstanceProfileInput{
+	output, err := c.IAM().GetInstanceProfile(context.TODO(), &iam.GetInstanceProfileInput{
 		InstanceProfileName: aws.String(profileName),
 	})
 	if err != nil {
