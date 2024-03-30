@@ -34,6 +34,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws/arn"
 	"github.com/aws/aws-sdk-go-v2/aws/retry"
 	"github.com/aws/aws-sdk-go-v2/service/iam"
+	"github.com/aws/aws-sdk-go-v2/service/ssm"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
@@ -49,8 +50,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/elbv2/elbv2iface"
 	"github.com/aws/aws-sdk-go/service/route53"
 	"github.com/aws/aws-sdk-go/service/route53/route53iface"
-	"github.com/aws/aws-sdk-go/service/ssm"
-	"github.com/aws/aws-sdk-go/service/ssm/ssmiface"
 	"github.com/aws/aws-sdk-go/service/sts"
 	"k8s.io/klog/v2"
 
@@ -136,7 +135,7 @@ type AWSCloud interface {
 	Spotinst() spotinst.Cloud
 	SQS() awsinterfaces.SQSAPI
 	EventBridge() awsinterfaces.EventBridgeAPI
-	SSM() ssmiface.SSMAPI
+	SSM() awsinterfaces.SSMAPI
 
 	// TODO: Document and rationalize these tags/filters methods
 	AddTags(name *string, tags map[string]string)
@@ -206,7 +205,7 @@ type awsCloudImplementation struct {
 	sts         *sts.STS
 	sqs         *sqs.Client
 	eventbridge *eventbridge.Client
-	ssm         *ssm.SSM
+	ssm         *ssm.Client
 
 	region string
 
@@ -406,17 +405,7 @@ func NewAWSCloud(region string, tags map[string]string) (AWSCloud, error) {
 		}
 		c.sqs = sqs.NewFromConfig(cfgV2)
 		c.eventbridge = eventbridge.NewFromConfig(cfgV2)
-
-		sess, err = session.NewSessionWithOptions(session.Options{
-			Config:            *config,
-			SharedConfigState: session.SharedConfigEnable,
-		})
-		if err != nil {
-			return c, err
-		}
-		c.ssm = ssm.New(sess, config)
-		c.ssm.Handlers.Send.PushFront(requestLogger)
-		c.addHandlers(region, &c.ssm.Handlers)
+		c.ssm = ssm.NewFromConfig(cfgV2)
 
 		updateAwsCloudInstances(region, c)
 
@@ -2041,16 +2030,16 @@ func describeVPC(c AWSCloud, vpcID string) (*ec2.Vpc, error) {
 // owner/name in which case we find the image with the specified name, owned by owner
 // name in which case we find the image with the specified name, with the current owner
 func (c *awsCloudImplementation) ResolveImage(name string) (*ec2.Image, error) {
-	return resolveImage(c.ssm, c.ec2, name)
+	return resolveImage(context.TODO(), c.ssm, c.ec2, name)
 }
 
-func resolveSSMParameter(ssmClient ssmiface.SSMAPI, name string) (string, error) {
+func resolveSSMParameter(ctx context.Context, ssmClient awsinterfaces.SSMAPI, name string) (string, error) {
 	klog.V(2).Infof("Resolving SSM parameter %q", name)
 	request := &ssm.GetParameterInput{
 		Name: aws.String(name),
 	}
 
-	response, err := ssmClient.GetParameter(request)
+	response, err := ssmClient.GetParameter(ctx, request)
 	if err != nil {
 		return "", fmt.Errorf("failed to get value for SSM parameter: %w", err)
 	}
@@ -2058,7 +2047,7 @@ func resolveSSMParameter(ssmClient ssmiface.SSMAPI, name string) (string, error)
 	return aws.StringValue(response.Parameter.Value), nil
 }
 
-func resolveImage(ssmClient ssmiface.SSMAPI, ec2Client ec2iface.EC2API, name string) (*ec2.Image, error) {
+func resolveImage(ctx context.Context, ssmClient awsinterfaces.SSMAPI, ec2Client ec2iface.EC2API, name string) (*ec2.Image, error) {
 	// TODO: Cache this result during a single execution (we get called multiple times)
 	klog.V(2).Infof("Calling DescribeImages to resolve name %q", name)
 	request := &ec2.DescribeImagesInput{}
@@ -2069,7 +2058,7 @@ func resolveImage(ssmClient ssmiface.SSMAPI, ec2Client ec2iface.EC2API, name str
 	} else if strings.HasPrefix(name, "ssm:") {
 		parameter := strings.TrimPrefix(name, "ssm:")
 
-		image, err := resolveSSMParameter(ssmClient, parameter)
+		image, err := resolveSSMParameter(ctx, ssmClient, parameter)
 		if err != nil {
 			return nil, err
 		}
@@ -2227,7 +2216,7 @@ func (c *awsCloudImplementation) EventBridge() awsinterfaces.EventBridgeAPI {
 	return c.eventbridge
 }
 
-func (c *awsCloudImplementation) SSM() ssmiface.SSMAPI {
+func (c *awsCloudImplementation) SSM() awsinterfaces.SSMAPI {
 	return c.ssm
 }
 
