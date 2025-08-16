@@ -1959,36 +1959,13 @@ func resolveImage(ctx context.Context, ssmClient awsinterfaces.SSMAPI, ec2Client
 
 		request.ImageIds = []string{image}
 	} else {
-		// Either <imagename> or <owner>/<imagename>
-		tokens := strings.SplitN(name, "/", 2)
-		if len(tokens) == 1 {
-			// self is a well-known value in the DescribeImages call
-			request.Owners = []string{"self"}
-			request.Filters = append(request.Filters, NewEC2Filter("name", name))
-		} else if len(tokens) == 2 {
-			owner := tokens[0]
-
-			// Check for well known owner aliases
-			switch owner {
-			case "amazon", "amazon.com":
-				owner = WellKnownAccountAmazonLinux2
-			case "debian10":
-				owner = WellKnownAccountDebian
-			case "debian11":
-				owner = WellKnownAccountDebian
-			case "flatcar":
-				owner = WellKnownAccountFlatcar
-			case "redhat", "redhat.com":
-				owner = WellKnownAccountRedhat
-			case "ubuntu":
-				owner = WellKnownAccountUbuntu
-			}
-
-			request.Owners = []string{owner}
-			request.Filters = append(request.Filters, NewEC2Filter("name", tokens[1]))
-		} else {
-			return nil, fmt.Errorf("image name specification not recognized: %q", name)
+		name, owner, err := ParseImageNameOwner(name)
+		if err != nil {
+			return nil, err
 		}
+		request.Owners = []string{owner}
+		request.Filters = append(request.Filters, NewEC2Filter("name", name))
+
 	}
 
 	var image *ec2types.Image
@@ -2017,6 +1994,38 @@ func resolveImage(ctx context.Context, ssmClient awsinterfaces.SSMAPI, ec2Client
 
 	klog.V(4).Infof("Resolved image %q", aws.ToString(image.ImageId))
 	return image, nil
+}
+
+func ParseImageNameOwner(image string) (string, string, error) {
+	var owner, name string
+	// Either <imagename> or <owner>/<imagename>
+	tokens := strings.SplitN(image, "/", 2)
+	if len(tokens) == 1 {
+		// self is a well-known value in the DescribeImages call
+		owner = "self"
+		name = image
+	} else if len(tokens) == 2 {
+		// Check for well known owner aliases
+		switch tokens[0] {
+		case "amazon", "amazon.com":
+			owner = WellKnownAccountAmazonLinux2
+		case "debian10":
+			owner = WellKnownAccountDebian
+		case "debian11":
+			owner = WellKnownAccountDebian
+		case "flatcar":
+			owner = WellKnownAccountFlatcar
+		case "redhat", "redhat.com":
+			owner = WellKnownAccountRedhat
+		case "ubuntu":
+			owner = WellKnownAccountUbuntu
+		}
+
+		name = tokens[1]
+	} else {
+		return "", "", fmt.Errorf("image name specification not recognized: %q", name)
+	}
+	return name, owner, nil
 }
 
 func (c *awsCloudImplementation) DescribeAvailabilityZones() ([]ec2types.AvailabilityZone, error) {
