@@ -48,6 +48,15 @@ func (b *AmazonVPCRoutedENIBuilder) Build(c *fi.NodeupModelBuilderContext) error
 				{"udevadm", "trigger"},
 			},
 		})
+
+		// Disable ec2-net-utils policy-routes for the primary ENI to prevent it
+		// from adding secondary IPs (used by VPC CNI for pods) to the interface.
+		// When secondary IPs are added, the kernel creates local routing table
+		// entries that take precedence over VPC CNI's veth routes, causing pod
+		// connectivity failures.
+		// See: https://github.com/aws/amazon-vpc-cni-k8s/issues/3524
+		c.AddTask(b.buildVPCCNIEc2NetUtilsDisableScript())
+		c.AddTask(b.buildVPCCNIEc2NetUtilsDisableService())
 	}
 
 	if (b.Distribution.IsUbuntu() && b.Distribution.Version() >= 22.04) ||
@@ -131,4 +140,93 @@ updates:
 	}
 
 	return nil
+}
+
+// buildVPCCNIEc2NetUtilsDisableScript creates a script that disables ec2-net-utils
+// policy-routes for the primary ENI. The script detects the primary interface
+// dynamically to handle different interface names (ens5, eth0, etc.).
+func (b *AmazonVPCRoutedENIBuilder) buildVPCCNIEc2NetUtilsDisableScript() *nodetasks.File {
+	script := `#!/bin/bash
+# Disable ec2-net-utils policy-routes for the primary ENI to prevent VPC CNI conflicts.
+# ec2-net-utils adds secondary IPs to the primary interface, which creates local routing
+# table entries that break pod connectivity when using AWS VPC CNI.
+# See: https://github.com/aws/amazon-vpc-cni-k8s/issues/3524
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+# Detect the primary interface (the one with the default route)
+PRIMARY_IFACE=$(ip -4 route show default | awk '{print $5}' | head -1)
+
+if [[ -z "${PRIMARY_IFACE}" ]]; then
+    echo "ERROR: Could not detect primary interface"
+    exit 1
+fi
+
+echo "Detected primary interface: ${PRIMARY_IFACE}"
+
+# Stop and disable the refresh timer that periodically queries IMDS for secondary IPs
+TIMER_UNIT="refresh-policy-routes@${PRIMARY_IFACE}.timer"
+if systemctl is-active --quiet "${TIMER_UNIT}" 2>/dev/null || systemctl is-enabled --quiet "${TIMER_UNIT}" 2>/dev/null; then
+    echo "Stopping and disabling ${TIMER_UNIT}"
+    systemctl stop "${TIMER_UNIT}" || true
+    systemctl disable "${TIMER_UNIT}" || true
+fi
+
+# Stop the service itself
+SERVICE_UNIT="policy-routes@${PRIMARY_IFACE}.service"
+if systemctl is-active --quiet "${SERVICE_UNIT}" 2>/dev/null; then
+    echo "Stopping ${SERVICE_UNIT}"
+    systemctl stop "${SERVICE_UNIT}" || true
+fi
+
+# Clear the ec2net_alias.conf drop-in that adds secondary IPs
+# The file is at /run/systemd/network/70-<iface>.network.d/ec2net_alias.conf
+ALIAS_CONF="/run/systemd/network/70-${PRIMARY_IFACE}.network.d/ec2net_alias.conf"
+ALIAS_DIR=$(dirname "${ALIAS_CONF}")
+
+if [[ -d "${ALIAS_DIR}" ]]; then
+    echo "Clearing ${ALIAS_CONF}"
+    cat > "${ALIAS_CONF}" << 'EOF'
+# Disabled for VPC CNI compatibility
+# See: https://github.com/aws/amazon-vpc-cni-k8s/issues/3524
+EOF
+    # Reload networkd to apply the change and remove secondary IPs from the interface
+    networkctl reload || true
+fi
+
+echo "ec2-net-utils policy-routes disabled for ${PRIMARY_IFACE}"
+`
+	return &nodetasks.File{
+		Path:     "/opt/kops/bin/disable-ec2-net-utils-policy-routes",
+		Contents: fi.NewStringResource(script),
+		Type:     nodetasks.FileType_File,
+		Mode:     fi.PtrTo("0755"),
+	}
+}
+
+// buildVPCCNIEc2NetUtilsDisableService creates a systemd oneshot service that
+// runs the disable script. This runs during nodeup and is also enabled to run
+// on boot to handle the case where ec2-net-utils is triggered before nodeup.
+func (b *AmazonVPCRoutedENIBuilder) buildVPCCNIEc2NetUtilsDisableService() *nodetasks.Service {
+	manifest := `[Unit]
+Description=Disable ec2-net-utils policy-routes for VPC CNI compatibility
+After=network-online.target systemd-networkd.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/kops/bin/disable-ec2-net-utils-policy-routes
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+`
+	service := &nodetasks.Service{
+		Name:       "disable-ec2-net-utils-policy-routes.service",
+		Definition: fi.PtrTo(manifest),
+	}
+	service.InitDefaults()
+	return service
 }

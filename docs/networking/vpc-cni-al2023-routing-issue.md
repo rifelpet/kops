@@ -84,30 +84,23 @@ But it does NOT address:
 
 ## Proposed Fix
 
-### Option 1: Stop policy-routes service and remove alias config (Recommended)
+### Option 1: Stop policy-routes service/timer and remove alias config (Recommended)
 
-Add to `amazon-vpc-routed-eni.go` for AL2023:
+The fix is implemented in `amazon-vpc-routed-eni.go` as a systemd oneshot service that dynamically detects the primary interface and disables ec2-net-utils for it. This handles different interface names (ens5, eth0, etc.) across instance types.
 
-```go
-// Stop and disable policy-routes@ens5 service to prevent ec2-net-utils
-// from adding secondary IPs to the primary ENI
-c.AddTask(&nodetasks.Service{
-    Name:    "policy-routes@ens5.service",
-    Running: fi.PtrTo(false),
-    Enabled: fi.PtrTo(false),
-})
+The implementation creates:
 
-// Remove the ec2net_alias.conf drop-in that adds secondary IPs
-c.AddTask(&nodetasks.File{
-    Path: "/run/systemd/network/70-ens5.network.d/ec2net_alias.conf",
-    Type: nodetasks.FileType_File,
-    Mode: fi.PtrTo("0644"),
-    Contents: fi.NewStringResource("# Disabled for VPC CNI compatibility\n"),
-    OnChangeExecute: [][]string{
-        {"networkctl", "reload"},
-    },
-})
-```
+1. **A script** (`/opt/kops/bin/disable-ec2-net-utils-policy-routes`) that:
+   - Detects the primary interface via the default route
+   - Stops and disables `refresh-policy-routes@<iface>.timer`
+   - Stops `policy-routes@<iface>.service`
+   - Clears the `ec2net_alias.conf` drop-in and reloads networkd
+
+2. **A systemd oneshot service** (`disable-ec2-net-utils-policy-routes.service`) that:
+   - Runs the script during nodeup
+   - Is enabled to run on boot as a safety net
+
+**Important**: The `refresh-policy-routes@<iface>.timer` must be disabled, not just the service. The timer triggers every minute and will re-add the IPs even if the service is stopped.
 
 ### Option 2: Clean up local routes via script
 
@@ -135,35 +128,82 @@ During investigation, martian packet drops were observed due to `rp_filter=2` on
 
 The VPC CNI sets `AWS_VPC_K8S_CNI_CONFIGURE_RPFILTER=false` which should handle rp_filter configuration, but the interaction with ec2-net-utils complicates this.
 
-### Timing Issue
+### Timing Issue - Observed Boot Sequence
 
-The `policy-routes@ens5.service` is triggered by udev when the network interface comes up, which happens during early boot. By the time nodeup runs to apply kops configuration, the service has already:
-1. Queried IMDS for secondary IPs
-2. Created the `ec2net_alias.conf` drop-in
-3. Triggered systemd-networkd to apply the IPs
+From observing a newly launched node (i-071b47b8d68b4354b), the following timeline was captured:
 
-The udev mask file only prevents future triggers, not the initial boot trigger.
+| Time | Event |
+|------|-------|
+| 01:54:53 | Kernel boots |
+| 01:54:58 | `policy-routes@ens5.service` starts, `systemd-networkd` starts |
+| 01:54:59 | ec2net queries IMDS for `local-ipv4s` - **no secondary IPs yet** (VPC CNI hasn't attached them) |
+| 01:55:14 | systemd-networkd restarted by kops nodeup |
+| 01:56:37 | Kubelet starts |
+| 01:56:50 | First veth (`eni59e9f8ca1d7`) created by VPC CNI as pod is scheduled |
+| 01:57:37 | `refresh-policy-routes@ens5` timer fires (runs every ~1 minute) |
+| 01:57:38 | ec2net queries IMDS for `local-ipv4s` - **finds 11 secondary IPs** added by VPC CNI |
+| 01:57:38 | ec2net creates `ec2net_alias.conf` with all secondary IPs, reloads networkd |
+| 01:57:38 | systemd-networkd reconfigures ens5, adding secondary IPs → **local routes created** |
+| 01:57:40 | Pods start failing probes (ebs-csi-node cannot reach healthz endpoint) |
+
+**Key insight**: The problem is NOT the initial boot. The initial `policy-routes@ens5` run finds no secondary IPs. The problem occurs when:
+1. VPC CNI attaches secondary IPs to the ENI (via AWS API)
+2. The `refresh-policy-routes@ens5.timer` fires (every ~1 minute)
+3. ec2-net-utils sees the new IPs in IMDS and adds them to ens5
+4. Local routes are created, breaking pod networking
+
+**Evidence from the node:**
+```
+# Veth route in main table (created by VPC CNI):
+172.20.166.164 dev eni59e9f8ca1d7 scope link
+
+# Local route (created by ec2-net-utils via systemd-networkd):
+local 172.20.166.164 dev ens5 proto kernel scope host src 172.20.166.164
+
+# The local table (rule 0) takes precedence over main table (rule 32766)
+```
+
+The udev mask file only prevents the initial service start, but the `refresh-policy-routes@ens5.timer` continues to run and poll IMDS for changes.
 
 ## Verification Steps
 
 To verify the fix works:
 
-1. Check that `policy-routes@ens5.service` is stopped/disabled:
+1. Check that the disable service ran successfully:
    ```bash
-   systemctl is-active policy-routes@ens5.service  # should be inactive
+   systemctl status disable-ec2-net-utils-policy-routes.service
    ```
 
-2. Check that `ec2net_alias.conf` is empty or contains only comments:
+2. Detect the primary interface and check that the timer/service are stopped:
    ```bash
-   cat /run/systemd/network/70-ens5.network.d/ec2net_alias.conf
+   PRIMARY_IFACE=$(ip -4 route show default | awk '{print $5}' | head -1)
+   systemctl is-active "refresh-policy-routes@${PRIMARY_IFACE}.timer"   # should be inactive
+   systemctl is-active "policy-routes@${PRIMARY_IFACE}.service"         # should be inactive
+   systemctl is-enabled "refresh-policy-routes@${PRIMARY_IFACE}.timer"  # should be disabled
    ```
 
-3. Check that pod IPs are NOT in the local routing table:
+3. Check that `ec2net_alias.conf` is empty or contains only comments:
+   ```bash
+   PRIMARY_IFACE=$(ip -4 route show default | awk '{print $5}' | head -1)
+   cat "/run/systemd/network/70-${PRIMARY_IFACE}.network.d/ec2net_alias.conf"
+   ```
+
+4. Check that pod IPs are NOT in the local routing table:
    ```bash
    ip route show table local | grep "172.20"  # should only show node's primary IP
    ```
 
-4. Verify pod connectivity:
+5. Check that pod IPs have veth routes but NOT local routes:
+   ```bash
+   PRIMARY_IFACE=$(ip -4 route show default | awk '{print $5}' | head -1)
+   # Should show veth routes for pod IPs
+   ip route show | grep "dev eni"
+
+   # The same IPs should NOT appear in local table (except node's primary IP)
+   ip route show table local | grep "dev ${PRIMARY_IFACE}"
+   ```
+
+6. Verify pod connectivity:
    ```bash
    kubectl exec -it <pod> -- curl -k https://kubernetes.default.svc
    ```
