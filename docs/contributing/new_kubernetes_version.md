@@ -7,7 +7,7 @@ kOps minor.
 
 So "adding support" is not a single change. It is a handful of independent pull requests, each
 landing when the upstream artifact it depends on actually exists — historically spread over several
-months. Dropping the oldest minor, by contrast, is one coherent pull request.
+months. Dropping support for the oldest minor, by contrast, is one coherent pull request.
 
 Find the most recent example of whichever operation you are doing and mirror it:
 
@@ -87,8 +87,11 @@ upstream component ships:
 | `pkg/model/components/etcdmanager/options.go` | feature-gate guards keyed on the minor |
 | `pkg/model/components/gcpcloudcontrollermanager.go` | a `switch` on the minor that currently has only a `default:` — it reads like dead code but is the intended hook |
 
-The cloud controller managers for AWS and Azure are **no longer** keyed on the minor; they carry a
-single pinned image, so bump the string rather than adding a case.
+The AWS and Azure cloud controller managers are not keyed on the minor; they carry a single pinned
+image, so bump the string rather than adding a case. AWS used to have a per-minor `switch` and was
+deliberately flattened in #18649: the provider has been stable enough that a single 1.x build is
+compatible with every Kubernetes version kOps supports, which is a compatibility judgement rather
+than anything forced by the provider's backport policy. Azure has never been per-minor.
 
 OpenStack is different again: its CCM and CSI image tags are *computed* from the cluster's
 Kubernetes minor in `upup/pkg/fi/cloudup/template_functions.go`. A new minor therefore produces new
@@ -107,7 +110,7 @@ is not out yet points back at the previous stable kOps.
 
 Add a line to `docs/releases/1.NN-NOTES.md` under `## Kubernetes`.
 
-## Dropping the oldest minor
+## Dropping support for the oldest minor
 
 This is one pull request, and a large one — recent examples touched 90 to 276 files.
 

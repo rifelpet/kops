@@ -1,12 +1,12 @@
 # Updating dependencies
 
-kOps pins third-party versions in a lot of places: Go modules, addon manifests, the binaries nodeup
-downloads onto nodes, GitHub Actions, e2e scenario charts, and the OS images in the channels. This
-page covers how to go about a dependency update and how to get the pull request merged.
+> **Read this if you are doing a dependency update.** It covers how to approach one and what is
+> expected of the change. It does not list the individual pins — for *where a given version lives
+> and what must be regenerated with it*, see the
+> [third-party dependency reference](../dependency-updates.md).
 
-For the mechanics of an individual pin — which file holds it, what else must change with it, and how
-to regenerate and verify — see the
-[third-party dependency reference](../dependency-updates.md), which enumerates every surface.
+kOps pins third-party versions in a lot of places: Go modules, addon manifests, the binaries nodeup
+downloads onto nodes, GitHub Actions, e2e scenario charts, and the OS images in the channels.
 
 ## Almost none of this is automated
 

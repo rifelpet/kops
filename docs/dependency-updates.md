@@ -1,12 +1,9 @@
 # Updating Third-Party Dependencies
 
-A reference for every place kOps pins a third-party version. Each section names the file that holds
-the version, the files coupled to it, the regeneration command, and the verification command.
-
-The contributor-facing companion,
-[updating dependencies](contributing/updating-dependencies.md), covers the surrounding workflow —
-how to structure the commits, what to say about the change, and the mistakes that have cost pull
-requests before.
+> **A lookup table, one entry per pin.** For each surface it names the file holding the version, the
+> files coupled to it, the regeneration command, and the verification command. It says nothing about
+> how to approach an update or what is expected of the change — that is
+> [updating dependencies](contributing/updating-dependencies.md).
 
 Two mechanisms cut across almost every surface below. Read these first.
 
@@ -483,7 +480,7 @@ The etcd-manager tag also appears in checked-in expected output under
 
 Adding or dropping a Kubernetes minor is a release-cycle activity rather than a dependency bump, and
 is not symmetric: adding support is several independent pull requests landing over months as each
-upstream artifact appears, while dropping the oldest minor is one large sweep. Both are described in
+upstream artifact appears, while dropping support for the oldest minor is one large sweep. Both are described in
 [Supporting a new Kubernetes version](contributing/new_kubernetes_version.md).
 
 ## OS images and AMIs
