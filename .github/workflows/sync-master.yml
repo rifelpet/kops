@@ -1,0 +1,19 @@
+name: sync-master
+
+on:
+  schedule:
+    - cron: '17 */6 * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      # Fast-forward only: fails rather than overwriting if master has diverged.
+      # SYNC_TOKEN is a fine-grained PAT (Contents + Workflows: write) because
+      # GITHUB_TOKEN may not update files under .github/workflows.
+      - run: gh repo sync rifelpet/kops --source kubernetes/kops --branch master
+        env:
+          GH_TOKEN: ${{ secrets.SYNC_TOKEN }}
